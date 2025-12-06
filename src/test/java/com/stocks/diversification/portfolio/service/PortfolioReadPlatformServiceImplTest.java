@@ -36,11 +36,15 @@ public class PortfolioReadPlatformServiceImplTest {
     @Mock
     private SectorRepository sectorRepository;
 
+    @Mock
+    private PortfolioAnalyzerEngine portfolioAnalyzerEngine;
+
     private PortfolioReadPlatformServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new PortfolioReadPlatformServiceImpl(portfolioRepository, stockRepository, sectorRepository);
+        service = new PortfolioReadPlatformServiceImpl(portfolioRepository, stockRepository, sectorRepository,
+                portfolioAnalyzerEngine);
     }
 
     @Test
@@ -74,5 +78,37 @@ public class PortfolioReadPlatformServiceImplTest {
 
         assertNotNull(response.getSectorAllocation().get("Tech"));
         assertNotNull(response.getSectorAllocation().get("Services"));
+    }
+
+    @Test
+    void testSmartAnalyzerInsights() {
+        // Setup
+        Portfolio p1 = Portfolio.builder().stockSymbol("AAPL").quantity(10).purchasePrice(new BigDecimal("150"))
+                .build();
+        Stock s1 = Stock.builder().symbol("AAPL").price(120.0).sectorId(1L).build(); // 20% Loss
+        Sector sec1 = Sector.builder().id(1L).name("Tech").build();
+
+        // Mocks
+        when(portfolioRepository.findByUserId(anyLong())).thenReturn(java.util.Collections.singletonList(p1));
+        when(stockRepository.findBySymbolIn(anyList())).thenReturn(java.util.Collections.singletonList(s1));
+        when(sectorRepository.findAllById(any())).thenReturn(java.util.Collections.singletonList(sec1));
+
+        // Mock Engine Behavior
+        when(portfolioAnalyzerEngine.analyze(anyList(), any(), any())).thenReturn(
+                java.util.Collections.singletonList(
+                        new com.stocks.diversification.portfolio.data.AnalysisInsight(
+                                com.stocks.diversification.portfolio.data.AnalysisInsight.InsightType.CRITICAL,
+                                com.stocks.diversification.portfolio.data.AnalysisInsight.InsightCategory.STOCK_PERFORMANCE,
+                                "Crash", "Sell")));
+        when(portfolioAnalyzerEngine.calculateHealthScore(anyList())).thenReturn(80);
+
+        // Execute
+        PortfolioDTOResponse response = service.getPortfolioSummary(1L);
+
+        // Verify
+        assertEquals(1200.0, response.getCurrentValue().doubleValue());
+        assertEquals(80, response.getHealthScore());
+        assertEquals(1, response.getInsights().size());
+        assertEquals("Crash", response.getInsights().get(0).getMessage());
     }
 }

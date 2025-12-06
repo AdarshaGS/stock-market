@@ -24,6 +24,10 @@ public class PortfolioDTOResponse {
 
   private Map<String, BigDecimal> sectorAllocation;
 
+  // Smart Analysis Fields
+  private int healthScore; // 0-100
+  private List<AnalysisInsight> insights;
+
   public PortfolioDTOResponse() {
   }
 }

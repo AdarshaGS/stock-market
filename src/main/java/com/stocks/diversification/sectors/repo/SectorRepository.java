@@ -10,7 +10,7 @@ import com.stocks.diversification.sectors.data.Sector;
 @Repository
 public interface SectorRepository extends JpaRepository<Sector, Long> {
 
-    @Query(value = "SELECT s.id FROM sectors s WHERE s.name = :sectorName", nativeQuery = true)
+    @Query(value = "SELECT s.id FROM sectors s WHERE s.name like %:sectorName%", nativeQuery = true)
     Long findIdByName(@Param("sectorName") String sectorName);
 
 }
