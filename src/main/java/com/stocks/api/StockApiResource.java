@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.stocks.data.Stock;
+import com.stocks.data.StockResponse;
 import com.stocks.service.StockReadPlatformService;
 
 @RestController
@@ -21,7 +21,7 @@ public class StockApiResource {
     
 
     @GetMapping("/{symbol}")
-    public Stock getStockBySymbol(@PathVariable String symbol) {
+    public StockResponse getStockBySymbol(@PathVariable String symbol) {
         return this.stockReadPlatformService.getStockBySymbol(symbol);
     }
 }

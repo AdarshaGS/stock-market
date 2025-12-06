@@ -1,7 +1,7 @@
 package com.stocks.service;
 
-import com.stocks.data.Stock;
+import com.stocks.data.StockResponse;
 
 public interface StockReadPlatformService {
-    Stock getStockBySymbol(String symbol);
+    StockResponse getStockBySymbol(String symbol);
 }

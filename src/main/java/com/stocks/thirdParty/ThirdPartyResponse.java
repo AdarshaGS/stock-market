@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ThirdPartyResponse {
     private String companyName;
-    private String industry;
     private CompanyProfile companyProfile;
-    // private Double currentPrice;
+    private CurrentPrice currentPrice;
 
 
     @Data
@@ -37,6 +36,16 @@ public class ThirdPartyResponse {
         public String priceEarningRatio;
         // public String price;
     }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CurrentPrice {
+        private Double BSE;
+        private Double NSE;
+    }
+
 }
 
 

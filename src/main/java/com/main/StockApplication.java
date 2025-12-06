@@ -8,11 +8,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(
     scanBasePackages = {
         "com.stocks", 
-        "com.externalServices" // if you have another root
+        "com.externalServices", 
+        "com.users"
     }
 )
-@EnableJpaRepositories(basePackages = {"com.stocks.repo", "com.externalServices.repo"})
-@EntityScan(basePackages = {"com.stocks.data", "com.externalServices.data"})
+@EnableJpaRepositories(basePackages = {"com.stocks.repo", "com.externalServices.repo", "com.users.repo", "com.stocks.*.*.repo"})
+@EntityScan(basePackages = {"com.stocks.data", "com.externalServices.data", "com.users.data", "com.stocks.*.*.data"})
 public class StockApplication {
 
 	public static void main(String[] args) {
