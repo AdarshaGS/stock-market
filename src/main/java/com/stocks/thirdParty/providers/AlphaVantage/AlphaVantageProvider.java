@@ -101,17 +101,17 @@ public class AlphaVantageProvider implements StockDataProvider {
 
         // Map Market Cap
         try {
-            long mc = Long.parseLong(av.getMarketCapitalization());
+            Double mc = Double.parseDouble(av.getMarketCapitalization());
             // AlphaVantage returns full number, our system expects standard units?
             // The system uses '20000' for Large Cap (Cr). AV returns raw bytes e.g
             // "155000000000".
             // Convert to Crores: / 10,000,000 (1 Cr = 10 Million)
-            long mcCr = mc / 10000000;
+            Double mcCr = mc / 10000000;
 
-            response.setStockDetailsReusableData(
-                    ThirdPartyResponse.StockDetailsReusableData.builder()
-                            .marketCap(mcCr)
-                            .build());
+            // response.setStockDetailsReusableData(
+            //         ThirdPartyResponse.StockDetailsReusableData.builder()
+            //                 .marketCap(mcCr)
+            //                 .build());
         } catch (Exception e) {
             // ignore parsing error
         }

@@ -59,10 +59,10 @@ public class StockReadPlatformServiceImplTest {
                 mockResponse.setCurrentPrice(price);
 
                 // Mock Market Cap Data
-                ThirdPartyResponse.StockDetailsReusableData stockDetails = ThirdPartyResponse.StockDetailsReusableData
-                                .builder()
-                                .marketCap(500000L).build();
-                mockResponse.setStockDetailsReusableData(stockDetails);
+                // ThirdPartyResponse.StockDetailsReusableData stockDetails = ThirdPartyResponse.StockDetailsReusableData
+                //                 .builder()
+                //                 .marketCap(500000.0).build();
+                // mockResponse.setStockDetailsReusableData(stockDetails);
 
                 when(stockDataProviderFactory.fetchStockDataWithRetry(symbol)).thenReturn(mockResponse);
                 when(sectorRepository.findIdByName("Information Technology")).thenReturn(10L);
@@ -94,10 +94,10 @@ public class StockReadPlatformServiceImplTest {
                 mockResponse.setCurrentPrice(price);
 
                 // Mock Market Cap Data
-                ThirdPartyResponse.StockDetailsReusableData stockDetails = ThirdPartyResponse.StockDetailsReusableData
-                                .builder()
-                                .marketCap(800000L).build();
-                mockResponse.setStockDetailsReusableData(stockDetails);
+                // ThirdPartyResponse.StockDetailsReusableData stockDetails = ThirdPartyResponse.StockDetailsReusableData
+                //                 .builder()
+                //                 .marketCap(800000.0).build();
+                // mockResponse.setStockDetailsReusableData(stockDetails);
 
                 when(stockDataProviderFactory.fetchStockDataWithRetry(symbol)).thenReturn(mockResponse);
                 when(sectorRepository.findIdByName("Financials")).thenReturn(20L);

@@ -15,10 +15,11 @@ import org.springframework.stereotype.Service;
 
 import com.externalServices.data.ExternalServicePropertiesEntity;
 import com.externalServices.service.ExternalService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stocks.exception.SymbolNotFoundException;
 import com.stocks.thirdParty.ThirdPartyResponse;
-
-import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class IndianAPIServiceImpl implements IndianAPIService {
@@ -52,17 +53,23 @@ public class IndianAPIServiceImpl implements IndianAPIService {
                 .GET();
 
         headers.forEach(builder::header);
-        
 
         HttpRequest request = builder.build();
 
         HttpResponse<String> httpResponse = this.httpClient
-            .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .join();
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .join();
 
         String response = httpResponse.body();
 
-        ThirdPartyResponse thirdPartyResponse = objectMapper.readValue(response, ThirdPartyResponse.class);
+        ThirdPartyResponse thirdPartyResponse = null;
+        try {
+            thirdPartyResponse = objectMapper.readValue(response, ThirdPartyResponse.class);
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         if (thirdPartyResponse == null) {
             throw new SymbolNotFoundException("Symbol not found in third-party API: " + symbol);
         }
@@ -79,10 +86,10 @@ public class IndianAPIServiceImpl implements IndianAPIService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept", "application/json");
-        headers.put("x-api-key",  apiKey);
+        headers.put("x-api-key", apiKey);
         return headers;
     }
-    
+
     private String encodeSymbol(String symbol) {
         try {
             return URLEncoder.encode(symbol, StandardCharsets.UTF_8.toString());

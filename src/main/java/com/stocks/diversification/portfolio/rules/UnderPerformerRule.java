@@ -24,7 +24,7 @@ public class UnderPerformerRule implements PortfolioAnalysisRule {
         List<AnalysisInsight> insights = new ArrayList<>();
 
         for (Portfolio p : portfolios) {
-            Stock stock = stockData.get(p.getStockSymbol());
+            Stock stock = stockData.get(p.getStockSymbol().toUpperCase());
             if (stock == null || stock.getPrice() == null)
                 continue;
 

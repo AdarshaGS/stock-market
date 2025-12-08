@@ -26,7 +26,7 @@ public class Portfolio {
     private Long id;
 
     @Column(name = "user_id")
-    private String userId;
+    private Long userId;
 
     @Column(name = "stock_symbol")
     private String stockSymbol;

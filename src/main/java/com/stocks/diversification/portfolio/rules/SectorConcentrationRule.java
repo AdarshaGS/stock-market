@@ -28,7 +28,7 @@ public class SectorConcentrationRule implements PortfolioAnalysisRule {
 
         // Calculate Sector Weights
         for (Portfolio p : portfolios) {
-            Stock stock = stockData.get(p.getStockSymbol());
+            Stock stock = stockData.get(p.getStockSymbol().toUpperCase());
             // Use current price logic (handled in Service mostly, but good to double check)
             BigDecimal price = (stock != null && stock.getPrice() != null) ? BigDecimal.valueOf(stock.getPrice())
                     : p.getPurchasePrice();
@@ -38,7 +38,7 @@ public class SectorConcentrationRule implements PortfolioAnalysisRule {
 
             String sectorName = "Others";
             if (stock != null && stock.getSectorId() != null) {
-                sectorName = sectorMap.getOrDefault(stock.getSectorId(), "Others");
+                sectorName = sectorMap.get(stock.getSectorId());
             }
             sectorValue.merge(sectorName, val, BigDecimal::add);
         }

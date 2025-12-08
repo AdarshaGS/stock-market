@@ -12,8 +12,13 @@ import com.stocks.diversification.portfolio.data.PortfolioDTOResponse;
 import com.stocks.diversification.portfolio.service.PortfolioReadPlatformService;
 import com.stocks.diversification.portfolio.service.PortfolioWritePlatformService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/portfolio")
+@Tag(name = "Portfolio Management", description = "APIs for managing and analyzing portfolios")
 public class PortfolioAPIResource {
 
     private final PortfolioWritePlatformService portfolioWritePlatformService;
@@ -30,16 +35,22 @@ public class PortfolioAPIResource {
     // each user will have multiple stocks in his portfolio, so user id will not be
     // unique
     @PostMapping()
+    @Operation(summary = "Add portfolio item", description = "Adds a stock to the user's portfolio.")
+    @ApiResponse(responseCode = "200", description = "Successfully added portfolio item")
     public Portfolio postPortfolioData(@RequestBody Portfolio portfolio) {
         return this.portfolioWritePlatformService.addPortfolio(portfolio);
     }
 
     @GetMapping("/diversification-score/{userId}")
+    @Operation(summary = "Get diversification score", description = "Calculates and returns the portfolio diversification score.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved diversification score")
     public PortfolioDTOResponse getDiversificationScore(@PathVariable Long userId) {
         return this.portfolioReadPlatformService.getDiversificationScore(userId);
     }
 
     @GetMapping("/summary/{userId}")
+    @Operation(summary = "Get portfolio summary", description = "Returns a comprehensive summary including investment, value, and analysis.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved portfolio summary")
     public PortfolioDTOResponse getPortfolioSummary(@PathVariable Long userId) {
         return this.portfolioReadPlatformService.getPortfolioSummary(userId);
     }

@@ -13,8 +13,8 @@ public class ThirdPartyResponse {
     private String companyName;
     private CompanyProfile companyProfile;
     private CurrentPrice currentPrice;
-    private StockDetailsReusableData stockDetailsReusableData;
-    private Long marketCapitalization;
+    // private StockDetailsReusableData stockDetailsReusableData;
+    // private Double marketCap;
 
     @Data
     @NoArgsConstructor
@@ -45,12 +45,12 @@ public class ThirdPartyResponse {
         private Double NSE;
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class StockDetailsReusableData {
-        private Long marketCap;
-    }
+    // @Data
+    // @NoArgsConstructor
+    // @AllArgsConstructor
+    // @Builder
+    // public static class StockDetailsReusableData {
+    // private Double marketCap;
+    // }
 
 }

@@ -39,6 +39,6 @@ public class Stock {
     private Long sectorId;
 
     @Column(name = "market_cap")
-    private Long marketCap;
+    private Double marketCap;
 
 }

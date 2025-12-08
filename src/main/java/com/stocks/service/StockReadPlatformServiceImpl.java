@@ -21,7 +21,7 @@ import com.stocks.thirdParty.factory.StockDataProviderFactory;
 public class StockReadPlatformServiceImpl implements StockReadPlatformService {
 
     final JdbcTemplate jdbcTemplate;
-    final IndianAPIService indianAPIService; // Could be removed if unused, but keeping to minimize diff
+    final IndianAPIService indianAPIService; 
     final StockRepository stockRepository;
     final SectorRepository sectorRepository;
     final SectorNormalizer sectorNormalizer;
@@ -88,9 +88,6 @@ public class StockReadPlatformServiceImpl implements StockReadPlatformService {
                 .description(response.getCompanyProfile().getCompanyDescription())
                 .price(response.getCurrentPrice().getNSE())
                 .sectorId(sectorId)
-                .marketCap(response.getStockDetailsReusableData() != null
-                        ? response.getStockDetailsReusableData().getMarketCap()
-                        : response.getMarketCapitalization())
                 .build();
         stock = this.stockRepository.save(stock);
         return stockResponseBuilder(stock, response);
@@ -104,7 +101,6 @@ public class StockReadPlatformServiceImpl implements StockReadPlatformService {
                 .nsePrice(stock.getPrice())
                 .bsePrice(response != null ? response.getCurrentPrice().getBSE() : 0)
                 .sector(sector != null ? sector.getName() : null)
-                .marketCap(stock.getMarketCap())
                 .build();
     }
 

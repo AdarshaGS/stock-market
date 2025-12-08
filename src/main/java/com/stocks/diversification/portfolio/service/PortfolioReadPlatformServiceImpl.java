@@ -57,7 +57,7 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
             return PortfolioDTOResponse.builder()
                     .score(0)
                     .assessment("No Data")
-                    .recommendations(List.of("Consider adding more diverse assets"))
+                    .recommendations(List.of("Start investing to see your portfolio analysis."))
                     .totalInvestment(BigDecimal.ZERO)
                     .currentValue(BigDecimal.ZERO)
                     .totalProfitLoss(BigDecimal.ZERO)
@@ -68,6 +68,7 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
                     .build();
         }
 
+        // 1. Fetch Stocks and Sectors
         List<String> stockSymbols = userPortfolios.stream()
                 .map(Portfolio::getStockSymbol)
                 .distinct()
@@ -84,102 +85,100 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
         Map<Long, String> sectorNameMap = sectorRepository.findAllById(sectorIds).stream()
                 .collect(Collectors.toMap(Sector::getId, Sector::getName));
 
+        // 2. Aggregate Data
         BigDecimal totalInvestment = BigDecimal.ZERO;
         BigDecimal currentValue = BigDecimal.ZERO;
+        Map<String, BigDecimal> sectorValueMap = new HashMap<>();
+
+        // Tracks for market cap (retaining existing logic)
         BigDecimal largeCapValue = BigDecimal.ZERO;
         BigDecimal midCapValue = BigDecimal.ZERO;
         BigDecimal smallCapValue = BigDecimal.ZERO;
 
-        Map<String, BigDecimal> sectorValueMap = new HashMap<>();
-
         for (Portfolio portfolio : userPortfolios) {
-            Stock stock = stockMap.get(portfolio.getStockSymbol());
+            Stock stock = stockMap.get(portfolio.getStockSymbol().toUpperCase());
 
-            BigDecimal investment = portfolio.getPurchasePrice().multiply(BigDecimal.valueOf(portfolio.getQuantity()));
-            BigDecimal curValue = BigDecimal.ZERO;
+            BigDecimal qty = BigDecimal.valueOf(portfolio.getQuantity());
+            BigDecimal buyPrice = portfolio.getPurchasePrice();
 
+            BigDecimal currentPrice = buyPrice; // Fallback
             if (stock != null && stock.getPrice() != null) {
-                curValue = BigDecimal.valueOf(stock.getPrice()).multiply(BigDecimal.valueOf(portfolio.getQuantity()));
+                currentPrice = BigDecimal.valueOf(stock.getPrice());
             } else if (portfolio.getCurrentPrice() != null) {
-                curValue = portfolio.getCurrentPrice().multiply(BigDecimal.valueOf(portfolio.getQuantity()));
-            } else {
-                curValue = investment; // Fallback
+                currentPrice = portfolio.getCurrentPrice();
             }
+
+            BigDecimal investment = qty.multiply(buyPrice);
+            BigDecimal curVal = qty.multiply(currentPrice);
 
             totalInvestment = totalInvestment.add(investment);
-            currentValue = currentValue.add(curValue);
+            currentValue = currentValue.add(curVal);
 
-            String sectorName = "Others";
+            // Sector Grouping
+            String sectorName = "Unknown";
             if (stock != null && stock.getSectorId() != null) {
-                sectorName = sectorNameMap.getOrDefault(stock.getSectorId(), "Others");
+                sectorName = sectorNameMap.get(stock.getSectorId());
             }
-            sectorValueMap.merge(sectorName, curValue, BigDecimal::add);
+            sectorValueMap.merge(sectorName, curVal, BigDecimal::add);
 
-            // Market Cap Logic
+            // Market Cap Grouping
             if (stock != null && stock.getMarketCap() != null) {
-                double mc = stock.getMarketCap(); // In Cr
+                double mc = stock.getMarketCap();
                 if (mc >= 20000) {
-                    largeCapValue = largeCapValue.add(curValue);
+                    largeCapValue = largeCapValue.add(curVal);
                 } else if (mc >= 5000) {
-                    midCapValue = midCapValue.add(curValue);
+                    midCapValue = midCapValue.add(curVal);
                 } else {
-                    smallCapValue = smallCapValue.add(curValue);
+                    smallCapValue = smallCapValue.add(curVal);
                 }
             } else {
-                // Default to Small Cap if unknown? Or explicit unclassified?
-                // Let's treat as Small Cap for now as per plan
-                smallCapValue = smallCapValue.add(curValue);
+                smallCapValue = smallCapValue.add(curVal);
             }
         }
 
         BigDecimal totalProfitLoss = currentValue.subtract(totalInvestment);
-        BigDecimal totalProfitLossPercentage = totalInvestment.compareTo(BigDecimal.ZERO) != 0
-                ? totalProfitLoss.divide(totalInvestment, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
-                : BigDecimal.ZERO;
+        BigDecimal totalProfitLossPercentage = BigDecimal.ZERO;
+        if (totalInvestment.compareTo(BigDecimal.ZERO) > 0) {
+            totalProfitLossPercentage = totalProfitLoss.divide(totalInvestment, 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100));
+        }
 
-        Map<String, BigDecimal> sectorAllocationBigDecimal = new HashMap<>();
-        // Calculate Sector Percentages
-        for (Map.Entry<String, BigDecimal> entry : sectorValueMap.entrySet()) {
-            if (currentValue.compareTo(BigDecimal.ZERO) > 0) {
-                BigDecimal percentage = entry.getValue().divide(currentValue, 4, RoundingMode.HALF_UP)
+        // 3. Compute Sector Allocation Percentages
+        Map<String, BigDecimal> sectorAllocationPct = new HashMap<>();
+        if (currentValue.compareTo(BigDecimal.ZERO) > 0) {
+            for (Map.Entry<String, BigDecimal> entry : sectorValueMap.entrySet()) {
+                BigDecimal pct = entry.getValue().divide(currentValue, 4, RoundingMode.HALF_UP)
                         .multiply(BigDecimal.valueOf(100));
-                sectorAllocationBigDecimal.put(entry.getKey(), percentage);
-            } else {
-                sectorAllocationBigDecimal.put(entry.getKey(), BigDecimal.ZERO);
+                sectorAllocationPct.put(entry.getKey(), pct);
             }
         }
 
-        // Convert to Map<String, BigDecimal> for legacy score calculation and DTO
-        Map<String, BigDecimal> sectorAllocation = sectorAllocationBigDecimal;
+        // 4. Compute Diversification Score & Recommendations
+        int diversificationScore = calculateDiversificationScore(sectorAllocationPct);
+        String assessment = getAssessment(diversificationScore);
+        List<String> recommendations = generateRecommendations(sectorAllocationPct, diversificationScore);
 
-        // Calculate Market Cap Percentages
-        MarketCapAllocation mcAllocation = new MarketCapAllocation(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        if (currentValue.compareTo(BigDecimal.ZERO) > 0) {
-            BigDecimal lcPct = largeCapValue.divide(currentValue, 4, RoundingMode.HALF_UP)
-                    .multiply(BigDecimal.valueOf(100));
-            BigDecimal mcPct = midCapValue.divide(currentValue, 4, RoundingMode.HALF_UP)
-                    .multiply(BigDecimal.valueOf(100));
-            BigDecimal scPct = smallCapValue.divide(currentValue, 4, RoundingMode.HALF_UP)
-                    .multiply(BigDecimal.valueOf(100));
-            mcAllocation = new MarketCapAllocation(lcPct, mcPct, scPct);
-        }
-
-        // Use Rule Engine
+        // 5. Existing Analysis Engine
         List<AnalysisInsight> insights = portfolioAnalyzerEngine.analyze(userPortfolios, stockMap, sectorNameMap);
         int healthScore = portfolioAnalyzerEngine.calculateHealthScore(insights);
 
-        // Calculate Diversification Score (Legacy)
-        int diversificationScore = calculateScore(sectorAllocation);
-        List<String> recommendations = generateRecommendations(sectorAllocation, diversificationScore);
+        // Market Cap Allocation
+        MarketCapAllocation mcAllocation = new MarketCapAllocation(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        if (currentValue.compareTo(BigDecimal.ZERO) > 0) {
+            mcAllocation = new MarketCapAllocation(
+                    largeCapValue.divide(currentValue, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)),
+                    midCapValue.divide(currentValue, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)),
+                    smallCapValue.divide(currentValue, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)));
+        }
 
         return PortfolioDTOResponse.builder()
                 .totalInvestment(totalInvestment)
                 .currentValue(currentValue)
-                .totalProfitLoss(currentValue.subtract(totalInvestment))
+                .totalProfitLoss(totalProfitLoss)
                 .totalProfitLossPercentage(totalProfitLossPercentage)
-                .sectorAllocation(sectorAllocation)
+                .sectorAllocation(sectorAllocationPct)
                 .score(diversificationScore)
-                .assessment(diversificationScore > 70 ? "Good" : "Needs Improvement")
+                .assessment(assessment)
                 .recommendations(recommendations)
                 .healthScore(healthScore)
                 .insights(insights)
@@ -187,42 +186,73 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
                 .build();
     }
 
-    private int calculateScore(Map<String, BigDecimal> sectorAllocation) {
+    private int calculateDiversificationScore(Map<String, BigDecimal> sectorAllocation) {
         if (sectorAllocation.isEmpty())
             return 0;
+
         int score = 100;
         int sectorCount = sectorAllocation.size();
 
-        if (sectorCount < 3)
+        // Penalize for low sector count
+        if (sectorCount == 1)
+            score -= 50;
+        else if (sectorCount == 2)
             score -= 30;
-        else if (sectorCount < 5)
+        else if (sectorCount == 3)
             score -= 10;
 
-        for (BigDecimal pct : sectorAllocation.values()) {
-            if (pct.doubleValue() > 25.0)
-                score -= 10;
-            if (pct.doubleValue() > 50.0)
-                score -= 20;
-        }
+        // Find max sector weight
+        double maxSectorWeight = sectorAllocation.values().stream()
+                .mapToDouble(BigDecimal::doubleValue)
+                .max().orElse(0.0);
 
-        return Math.max(0, score);
+        // Penalize for high concentration
+        if (maxSectorWeight > 70.0)
+            score -= 30;
+        else if (maxSectorWeight > 50.0)
+            score -= 20;
+        else if (maxSectorWeight > 40.0)
+            score -= 10;
+
+        return Math.max(0, Math.min(100, score));
     }
 
+    private String getAssessment(int score) {
+        if (score >= 80)
+            return "Well Diversified";
+        if (score >= 60)
+            return "Moderately Diversified";
+        if (score >= 40)
+            return "Concentrated";
+        return "Needs Improvement";
+    }
 
     private List<String> generateRecommendations(Map<String, BigDecimal> sectorAllocation, int score) {
         List<String> recs = new ArrayList<>();
-        if (score < 60)
+        int sectorCount = sectorAllocation.size();
+
+        if (sectorCount <= 2) {
             recs.add("Consider diversifying into more sectors.");
+        }
+
         for (Map.Entry<String, BigDecimal> entry : sectorAllocation.entrySet()) {
-            if (entry.getValue().doubleValue() > 30.0) {
-                recs.add("High exposure to " + entry.getKey() + " sector (" + entry.getValue()
-                        + "%). Consider reducing.");
+            if (entry.getValue().doubleValue() > 50.0) {
+                recs.add(String.format("High exposure to %s sector (%.2f%%). Consider reducing.", entry.getKey(),
+                        entry.getValue()));
             }
         }
-        if (sectorAllocation.size() < 3)
-            recs.add("You have investments in few sectors. Look for opportunities in new industries.");
-        if (recs.isEmpty())
+
+        if (sectorAllocation.containsKey("Unknown") && sectorAllocation.get("Unknown").doubleValue() > 10.0) {
+            recs.add(
+                    "A significant portion of your portfolio is mapped to 'Unknown' sector. Consider updating sector classifications.");
+        }
+
+        if (recs.isEmpty() && score < 50) {
+            recs.add("Your portfolio is concentrated. Look for opportunities in new industries.");
+        } else if (recs.isEmpty()) {
             recs.add("Your portfolio looks well diversified!");
+        }
+
         return recs;
     }
 }
