@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExternalServicePropertiesEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +28,7 @@ public class ExternalServicePropertiesEntity {
 
     @Column(name = "value", nullable = false)
     private String value;
-    
+
     @Column(name = "external_service_id", nullable = false)
     private Long externalServiceId;
 }

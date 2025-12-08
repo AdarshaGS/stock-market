@@ -9,5 +9,5 @@ import com.externalServices.data.ExternalServiceEntity;
 public interface ExternalServiceRepository extends JpaRepository<ExternalServiceEntity, Long> {
 
     ExternalServiceEntity findByServiceName(String serviceName);
-    
+
 }

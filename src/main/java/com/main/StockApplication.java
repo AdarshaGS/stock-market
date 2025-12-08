@@ -9,7 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = {
                 "com.stocks",
                 "com.externalServices",
-                "com.users"
+                "com.users",
+                "com.auth"
 })
 @EnableJpaRepositories(basePackages = { "com.stocks.repo", "com.externalServices.repo", "com.users.repo",
                 "com.stocks.*.*.repo", "com.stocks.networth.repo" })

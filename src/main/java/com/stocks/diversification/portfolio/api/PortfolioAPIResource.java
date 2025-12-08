@@ -30,10 +30,6 @@ public class PortfolioAPIResource {
         this.portfolioReadPlatformService = portfolioReadPlatformService;
     }
 
-    // Define your API endpoints here
-    // Post api to post portfolio data
-    // each user will have multiple stocks in his portfolio, so user id will not be
-    // unique
     @PostMapping()
     @Operation(summary = "Add portfolio item", description = "Adds a stock to the user's portfolio.")
     @ApiResponse(responseCode = "200", description = "Successfully added portfolio item")

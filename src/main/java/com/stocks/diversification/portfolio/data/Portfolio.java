@@ -43,6 +43,4 @@ public class Portfolio {
     @Column(name = "profit_and_loss_percentage")
     private BigDecimal profitAndLossPercentage;
 
-    // @Column(name = "purchase_date")
-    // private String purchaseDate;
 }
