@@ -12,8 +12,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         "com.users"
 })
 @EnableJpaRepositories(basePackages = { "com.stocks.repo", "com.externalServices.repo", "com.users.repo",
-        "com.stocks.*.*.repo" })
-@EntityScan(basePackages = { "com.stocks.data", "com.externalServices.data", "com.users.data", "com.stocks.*.*.data" })
+        "com.stocks.*.*.repo", "com.stocks.networth.repo" })
+@EntityScan(basePackages = { "com.stocks.data", "com.externalServices.data", "com.users.data", "com.stocks.*.*.data",
+        "com.stocks.networth.data"
+})
 @EnableScheduling
 public class StockApplication {
 
