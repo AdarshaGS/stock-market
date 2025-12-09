@@ -1,82 +1,66 @@
-# Stock Market Application
+# 💰 MoneyPulse — Stock & Personal Finance Intelligence System
 
-## Overview
-A Spring Boot application designed to help users manage their stock portfolios, analyze sector diversification, and make informed investment decisions. The system integrates with third-party APIs to fetch real-time market data.
+MoneyPulse is a Spring Boot–based financial intelligence platform designed to help users track their investments, analyze diversification, compute net worth, and make data-driven financial decisions.  
 
-## Features
--   **Stock Data Retrieval**: Fetch stock details (price, company profile, sector) using external APIs (Indian Market Data).
--   **Portfolio Management**: Add stocks to a user's portfolio and track investments.
--   **Portfolio Summary**: View total investment, current value, profit/loss, and sector allocation.
--   **Diversification Analysis**: (In Progress) Analyze portfolio diversification scores to reduce risk.
--   **Sector Tracking**: Automatically categorizes stocks into sectors.
+It integrates with external stock market APIs, performs sector-based diversification scoring, and is structured to support future modules like budgeting, account aggregators, alerts, and AI-driven insights.
 
-## Technology Stack
--   **Java**: 17
--   **Framework**: Spring Boot 4.0.0
--   **Database**: MySQL
--   **ORM**: Spring Data JPA
--   **Build Tool**: Gradle
--   **Utilities**: Lombok
+---
 
-## Prerequisites
--   Java 17 installed.
--   MySQL Server running locally.
--   Gradle (optional, `gradlew` wrapper is included).
+## 🌟 Key Capabilities
 
-## Setup & and Installation
+✔ Stock price retrieval from external APIs  
+✔ Portfolio tracking & profit/loss analysis  
+✔ Sector-based diversification scoring  
+✔ Token-based authentication using JWT  
+✔ User password encryption using BCrypt  
+✔ Caching logic for unavailable external providers  
+✔ Expandable architecture for future finance modules  
 
-1.  **Clone the repository**
-    ```bash
-    git clone <repository_url>
-    cd stocks
-    ```
+---
 
-2.  **Database Configuration**
-    -   Create a MySQL database named `stock-market`.
-    -   The application connects to `localhost:3306` with user `root` and password `mysql`.
-    -   To change these credentials, update `src/main/resources/application.properties`:
-        ```properties
-        spring.datasource.url=jdbc:mysql://localhost:3306/stock-market...
-        spring.datasource.username=YOUR_USERNAME
-        spring.datasource.password=YOUR_PASSWORD
-        ```
+## 🧭 Product Workflow Diagram
 
-3.  **Build the project**
-    ```bash
-    ./gradlew build
-    ```
+> The full system workflow diagram is available here:  
+🔗 **https://www.mermaidchart.com/app/projects/ef11d05b-42d4-47ba-a46f-4b0a68ac58f3/diagrams/bf2087c9-56e3-4bd7-b604-812953cd9be5/version/v0.1/edit**
 
-4.  **Run the application**
-    ```bash
-    ./gradlew bootRun
-    ```
+### Simplified System Flow (Mermaid)
 
-## API Endpoints
+```mermaid
+flowchart TD
 
-### Stock
+User[[User]] -->|Register/Login| Auth[JWT Auth Service]
+Auth -->|Valid Credentials| JWT[Generate JWT Token]
+JWT -->|Bearer Token| API[Protected API Layer]
 
--   **Get Stock Details**
-    -   `GET /api/stocks/{symbol}`
-    -   Fetches details for a given stock symbol (e.g., `RELIANCE`, `TCS`). If not in DB, fetches from third-party and saves it.
+API -->|Portfolio Requests| PortfolioService
+API -->|Stock Lookup| StockService
+API -->|Net Worth Requests| NetWorthService
+API -->|User Asset Insert| AssetService
+API -->|Future: Alerts & Analytics| InsightsService
 
-### Portfolio
+StockService -->|Check DB| StockDB[(Stocks DB)]
+StockDB -->|Found| ReturnStock
+StockDB -->|Not Found| ThirdPartyCheck{External Stock API?}
 
--   **Add Portfolio Item**
-    -   `POST /api/portfolio`
-    -   Body: `Portfolio` JSON object.
-    -   Adds a stock transaction to the user's portfolio.
+ThirdPartyCheck -->|Yes| ExternalAPI[External Market API]
+ExternalAPI --> Parse[Parse & Store]
+Parse --> ReturnStock
 
--   **Get Portfolio Summary**
-    -   `GET /api/portfolio/summary/{userId}`
-    -   Returns total investment, current value, profit/loss, and sector allocation for the user.
+ThirdPartyCheck -->|No| Cached[Use Last Known Price]
 
--   **Get Diversification Score**
-    -   `GET /api/portfolio/diversification-score/{userId}`
-    -   (Stub) Returns diversification analysis for the user.
+PortfolioService --> PortfolioDB[(Portfolio Holdings DB)]
+PortfolioDB --> Calculate[Calculate Current Value]
 
-## Project Structure
+Calculate --> Diversify[Sector Mapping & Score]
 
--   `src/main/java/com/stocks/api`: General Stock APIs.
--   `src/main/java/com/stocks/diversification/portfolio`: Portfolio management logic (API, Data, Service, Repo).
--   `src/main/java/com/stocks/diversification/sectors`: Sector management.
--   `src/main/java/com/stocks/thirdParty`: Integration with external Stock APIs.
+Diversify --> SectorDB[(Sectors DB)]
+SectorDB --> Diversify
+
+Diversify --> Insight[Generate Recommendations]
+Insight --> ReturnSummary
+
+NetWorthService --> UserAssets[(Assets DB)]
+NetWorthService --> UserLiabilities[(Liabilities DB)]
+UserAssets --> ComputeNW[Compute Net Worth]
+UserLiabilities --> ComputeNW
+ComputeNW --> ReturnNW[Return Net Worth Summary]

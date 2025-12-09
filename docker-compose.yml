@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: stock-market-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: stock-market
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_USER: stockuser
+      MYSQL_PASSWORD: stockpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - stock-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pmysql"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Spring Boot Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stock-market-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Database Configuration
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/stock-market?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: mysql
+      
+      # Flyway Configuration
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
+      SPRING_FLYWAY_LOCATIONS: filesystem:scripts
+      
+      # JWT Configuration
+      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      JWT_EXPIRATION: 86400000
+      
+      # Application Configuration
+      SPRING_APPLICATION_NAME: stock
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - stock-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  stock-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
