@@ -1,16 +1,15 @@
 version: '3.8'
 
 services:
-  # MySQL Database
   mysql:
     image: mysql:8.0
-    container_name: stock-market-db
+    container_name: pi-system-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: stock-market
+      MYSQL_DATABASE: pi-system
       MYSQL_ROOT_PASSWORD: mysql
-      MYSQL_USER: stockuser
-      MYSQL_PASSWORD: stockpass
+      MYSQL_USER: root
+      MYSQL_PASSWORD: mysql
     ports:
       - "3306:3306"
     volumes:
@@ -18,38 +17,32 @@ services:
     networks:
       - stock-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pmysql"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pmysql"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
 
-  # Spring Boot Application
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: stock-market-app
+    container_name: pi-system-app
     restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
-      # Database Configuration
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/stock-market?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: mysql
-      
-      # Flyway Configuration
-      SPRING_FLYWAY_ENABLED: "true"
-      SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
-      SPRING_FLYWAY_LOCATIONS: filesystem:scripts
-      
-      # JWT Configuration
+      # DB configuration matching your `application.properties`
+      DB_URL: jdbc:mysql://mysql:3306/pi-system?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USER: mysql
+      DB_PASSWORD: T"\U;yn@h3285mB3
+
+      # JWT config
       JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       JWT_EXPIRATION: 86400000
-      
-      # Application Configuration
+
       SPRING_APPLICATION_NAME: stock
+
     depends_on:
       mysql:
         condition: service_healthy
