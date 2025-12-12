@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SavingsAccountDTO {
+    private Long Id;
     private String accountHolderName;
     private String bankName;
     private BigDecimal amount;

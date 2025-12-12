@@ -13,13 +13,24 @@ import org.springframework.scheduling.annotation.EnableScheduling;
                 "com.auth",
                 "com.savings"
 })
-@EnableJpaRepositories(basePackages = { "com.investments.*.repo", "com.externalServices.repo", "com.users.repo",
-                "com.investments.*.*.*.repo", "com.users.*.repo.", "com.savings.repo",
-                "com.investments.*.*.repo" })
-@EntityScan(basePackages = { "com.investments.*.data", "com.externalServices.data", "com.users.data",
-                "com.investments.*.*.*.data",
+@EnableJpaRepositories(basePackages = {
+                "com.investments.*.repo",
+                "com.investments.*.*.repo",
+                "com.investments.*.*.*.repo",
+                "com.externalServices.repo",
+                "com.users.repo",
+                "com.users.*.repo",
+                "com.savings.repo"
+})
+@EntityScan(basePackages = {
+                "com.investments.*.data",
                 "com.investments.*.*.data",
-                "com.users.*.data", "com.savings.data" })
+                "com.investments.*.*.*.data",
+                "com.externalServices.data",
+                "com.users.data",
+                "com.users.*.data",
+                "com.savings.data"
+})
 @EnableScheduling
 public class StockApplication {
 
