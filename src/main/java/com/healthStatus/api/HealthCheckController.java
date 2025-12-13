@@ -1,4 +1,4 @@
-package com.health.controller;
+package com.healthStatus.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.health.data.HealthStatus;
-import com.health.service.HealthCheckService;
+import com.healthStatus.data.HealthStatus;
+import com.healthStatus.service.HealthCheckService;
 
 @RestController
 @RequestMapping("/api/health")

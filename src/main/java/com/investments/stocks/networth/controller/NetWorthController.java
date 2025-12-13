@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/net-worth")
+@RequestMapping("/api/v1/net-worth")
 @Tag(name = "Net Worth Management", description = "APIs for calculating user net worth")
 public class NetWorthController {
 

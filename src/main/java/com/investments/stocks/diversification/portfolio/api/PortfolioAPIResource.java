@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/portfolio")
+@RequestMapping("/api/v1/portfolio")
 @Tag(name = "Portfolio Management", description = "APIs for managing and analyzing portfolios")
 public class PortfolioAPIResource {
 

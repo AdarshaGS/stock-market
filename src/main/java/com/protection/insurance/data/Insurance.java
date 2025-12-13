@@ -1,4 +1,4 @@
-package com.loan.data;
+package com.protection.insurance.data;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,11 +9,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "loans")
+@Table(name = "insurance_policies")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Loan {
+public class Insurance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,23 +24,17 @@ public class Loan {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LoanType loanType;
+    private InsuranceType type;
 
+    private String policyNumber;
     private String provider;
-    private String loanAccountNumber;
 
-    // Financials
-    private BigDecimal principalAmount;
-    private BigDecimal outstandingAmount;
-    private BigDecimal interestRate; // Annual Percentage Rate (APR)
+    private BigDecimal premiumAmount;
+    private BigDecimal coverAmount;
 
-    // Schedule
-    private Integer tenureMonths;
     private LocalDate startDate;
     private LocalDate endDate;
-
-    // Repayment
-    private BigDecimal emiAmount;
+    private LocalDate nextPremiumDate;
 
     // Optional: For partial fetch from Account Aggregator
     private boolean isAutoFetched;

@@ -1,6 +1,6 @@
-package com.health.service;
+package com.healthStatus.service;
 
-import com.health.data.HealthStatus;
+import com.healthStatus.data.HealthStatus;
 
 public interface HealthCheckService {
 

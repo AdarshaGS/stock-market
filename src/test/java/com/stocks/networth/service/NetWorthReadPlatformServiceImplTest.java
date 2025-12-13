@@ -34,7 +34,9 @@ public class NetWorthReadPlatformServiceImplTest {
         portfolioService = mock(PortfolioReadPlatformService.class);
         userAssetRepository = mock(UserAssetRepository.class);
         userLiabilityRepository = mock(UserLiabilityRepository.class);
-        service = new NetWorthReadPlatformServiceImpl(portfolioService, userAssetRepository, userLiabilityRepository);
+        service = new NetWorthReadPlatformServiceImpl(portfolioService, userAssetRepository, userLiabilityRepository,
+                null, null, null, null
+        );
     }
 
     @Test

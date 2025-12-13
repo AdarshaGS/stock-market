@@ -46,7 +46,7 @@ public class PortfolioReadPlatformServiceImplTest {
         @BeforeEach
         void setUp() {
                 service = new PortfolioReadPlatformServiceImpl(portfolioRepository, stockRepository, sectorRepository,
-                                portfolioAnalyzerEngine);
+                                portfolioAnalyzerEngine, null, null, null, null, null);
         }
 
         @Test

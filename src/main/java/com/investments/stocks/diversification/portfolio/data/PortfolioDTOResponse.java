@@ -29,6 +29,11 @@ public class PortfolioDTOResponse {
   private List<AnalysisInsight> insights;
   private MarketCapAllocation marketCapAllocation;
 
+  // Extended summary fields
+  private BigDecimal savingsTotal;        // Sum of savings accounts
+  private BigDecimal loansOutstanding;    // Sum of loan outstanding amounts
+  private BigDecimal insuranceCoverTotal; // Sum of insurance cover amounts
+
   public PortfolioDTOResponse() {
   }
 }

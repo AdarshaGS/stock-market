@@ -49,12 +49,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (jwtUtil.validateToken(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
+                    System.out.println(userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
         } catch (Exception e) {
-            // Invalid token - continue without authentication
+            SecurityContextHolder.clearContext();
+            System.out.println("JWT authentication failed: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
