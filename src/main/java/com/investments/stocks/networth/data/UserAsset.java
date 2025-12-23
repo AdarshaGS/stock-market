@@ -50,6 +50,6 @@ public class UserAsset {
     private LocalDateTime lastUpdatedAt;
 
     public enum AssetType {
-        STOCK, MUTUAL_FUND, ETF, SAVINGS, PF, GOLD, CASH, OTHER
+        STOCK, MUTUAL_FUND, ETF, SAVINGS, PF, GOLD, CASH, LENDING, OTHER
     }
 }

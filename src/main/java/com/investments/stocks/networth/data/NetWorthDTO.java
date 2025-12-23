@@ -19,7 +19,8 @@ public class NetWorthDTO {
     private BigDecimal savingsValue;
     private BigDecimal outstandingLoans;
     private BigDecimal outstandingTaxLiability;
-    private BigDecimal netWorthAfterTax; 
+    private BigDecimal outstandingLendings;
+    private BigDecimal netWorthAfterTax;
     private Map<AssetType, BigDecimal> assetBreakdown;
     private Map<LiabilityType, BigDecimal> liabilityBreakdown;
 }

@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "loans")
 @Data
@@ -36,7 +38,9 @@ public class Loan {
 
     // Schedule
     private Integer tenureMonths;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     // Repayment

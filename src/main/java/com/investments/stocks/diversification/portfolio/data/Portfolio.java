@@ -28,6 +28,9 @@ public class Portfolio {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "stock_id")
+    private Long stockId;
+
     @Column(name = "stock_symbol")
     private String stockSymbol;
 

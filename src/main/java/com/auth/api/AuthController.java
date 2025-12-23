@@ -72,6 +72,7 @@ public class AuthController {
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             LoginResponse response = LoginResponse.builder()
+                    .userId(user.getId())
                     .token(token)
                     .refreshToken(refreshToken)
                     .email(user.getEmail())
@@ -102,6 +103,7 @@ public class AuthController {
             Users savedUser = userWriteService.createUser(user);
 
             LoginResponse response = LoginResponse.builder()
+                    .userId(savedUser.getId())
                     .email(savedUser.getEmail())
                     .name(savedUser.getName())
                     .message("User registered successfully")

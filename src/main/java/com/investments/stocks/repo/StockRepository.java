@@ -12,4 +12,6 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     List<Stock> findBySymbolIn(List<String> symbols);
 
     Stock findBySymbol(String symbol);
+
+    Long findIdBySymbol(String symbol);
 }

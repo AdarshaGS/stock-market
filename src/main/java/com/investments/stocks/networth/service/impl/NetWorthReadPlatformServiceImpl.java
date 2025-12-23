@@ -26,6 +26,8 @@ import com.savings.service.RecurringDepositService;
 import com.savings.data.SavingsAccountDTO;
 import com.savings.data.FixedDepositDTO;
 import com.savings.data.RecurringDepositDTO;
+import com.lending.service.LendingService;
+import com.lending.data.LendingDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,6 +43,7 @@ public class NetWorthReadPlatformServiceImpl implements NetWorthReadPlatformServ
         private final RecurringDepositService recurringDepositService;
         private final LoanService loanService;
         private final TaxService taxService;
+        private final LendingService lendingService;
 
         @Override
         public NetWorthDTO getNetWorth(Long userId) {
@@ -105,6 +108,19 @@ public class NetWorthReadPlatformServiceImpl implements NetWorthReadPlatformServ
                 // Add Stocks & Savings to Asset Breakdown
                 assetBreakdown.merge(AssetType.STOCK, stockValue, BigDecimal::add);
                 assetBreakdown.merge(AssetType.CASH, savingsValue, BigDecimal::add);
+
+                // Add Lending outstanding as asset
+                BigDecimal lendingOutstanding = BigDecimal.ZERO;
+                try {
+                        List<LendingDTO> lendings = lendingService.getUserLendings(userId);
+                        if (lendings != null) {
+                                lendingOutstanding = lendings.stream()
+                                                .map(LendingDTO::getOutstandingAmount)
+                                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                        }
+                } catch (Exception ignored) {
+                }
+                assetBreakdown.merge(AssetType.LENDING, lendingOutstanding, BigDecimal::add);
 
                 // Calculate Liability Breakdown
                 Map<LiabilityType, BigDecimal> liabilityBreakdown = liabilities.stream()
@@ -182,6 +198,7 @@ public class NetWorthReadPlatformServiceImpl implements NetWorthReadPlatformServ
                                 .savingsValue(savingsValue)
                                 .outstandingLoans(loansOutstanding)
                                 .outstandingTaxLiability(taxLiability)
+                                .outstandingLendings(lendingOutstanding)
                                 .netWorthAfterTax(netWorthPostTax)
                                 .assetBreakdown(assetBreakdown)
                                 .liabilityBreakdown(liabilityBreakdown)

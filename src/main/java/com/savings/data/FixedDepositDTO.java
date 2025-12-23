@@ -3,6 +3,8 @@ package com.savings.data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +23,9 @@ public class FixedDepositDTO {
     private BigDecimal interestRate;
     private Integer tenureMonths;
     private BigDecimal maturityAmount;
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate startDate;
+    @JsonFormat(pattern = "yyyy-M-d")
     private LocalDate maturityDate;
     private String status;
 }
