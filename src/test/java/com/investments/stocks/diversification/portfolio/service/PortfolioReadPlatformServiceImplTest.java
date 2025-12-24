@@ -45,9 +45,6 @@ class PortfolioReadPlatformServiceImplTest {
     private SectorRepository sectorRepository;
 
     @Mock
-    private PortfolioAnalyzerEngine portfolioAnalyzerEngine;
-
-    @Mock
     private SavingsAccountService savingsAccountService;
 
     @Mock
@@ -92,21 +89,18 @@ class PortfolioReadPlatformServiceImplTest {
         sector.setName("Technology");
 
         List<SavingsAccountDTO> savings = Arrays.asList(
-                SavingsAccountDTO.builder().amount(new BigDecimal("100000")).build()
-        );
+                SavingsAccountDTO.builder().amount(new BigDecimal("100000")).build());
 
         List<FixedDepositDTO> fds = Arrays.asList(
                 FixedDepositDTO.builder()
                         .principalAmount(new BigDecimal("50000"))
                         .maturityAmount(new BigDecimal("55000"))
-                        .build()
-        );
+                        .build());
 
         List<RecurringDepositDTO> rds = Arrays.asList(
                 RecurringDepositDTO.builder()
                         .maturityAmount(new BigDecimal("30000"))
-                        .build()
-        );
+                        .build());
 
         Loan loan = new Loan();
         loan.setOutstandingAmount(new BigDecimal("200000"));
@@ -117,8 +111,6 @@ class PortfolioReadPlatformServiceImplTest {
         when(portfolioRepository.findByUserId(userId)).thenReturn(Arrays.asList(portfolio));
         when(stockRepository.findBySymbolIn(anyList())).thenReturn(Arrays.asList(stock));
         when(sectorRepository.findAllById(anySet())).thenReturn(Arrays.asList(sector));
-        when(portfolioAnalyzerEngine.analyze(anyList(), anyMap(), anyMap())).thenReturn(Arrays.asList());
-        when(portfolioAnalyzerEngine.calculateHealthScore(anyList())).thenReturn(85);
         when(savingsAccountService.getAllSavingsAccounts(userId)).thenReturn(savings);
         when(fixedDepositService.getAllFixedDeposits(userId)).thenReturn(fds);
         when(recurringDepositService.getAllRecurringDeposits(userId)).thenReturn(rds);
@@ -130,7 +122,7 @@ class PortfolioReadPlatformServiceImplTest {
 
         // Assert
         assertNotNull(result);
-        
+
         // Portfolio calculations
         assertEquals(0, result.getTotalInvestment().compareTo(new BigDecimal("1500"))); // 10 * 150
         assertEquals(0, result.getCurrentValue().compareTo(new BigDecimal("2000"))); // 10 * 200
@@ -177,9 +169,7 @@ class PortfolioReadPlatformServiceImplTest {
         when(portfolioRepository.findByUserId(userId)).thenReturn(Arrays.asList(portfolio));
         when(stockRepository.findBySymbolIn(anyList())).thenReturn(Arrays.asList());
         when(sectorRepository.findAllById(anySet())).thenReturn(Arrays.asList());
-        when(portfolioAnalyzerEngine.analyze(anyList(), anyMap(), anyMap())).thenReturn(Arrays.asList());
-        when(portfolioAnalyzerEngine.calculateHealthScore(anyList())).thenReturn(0);
-        
+
         // Services throw exceptions
         when(savingsAccountService.getAllSavingsAccounts(userId)).thenThrow(new RuntimeException("Service error"));
         when(fixedDepositService.getAllFixedDeposits(userId)).thenThrow(new RuntimeException("Service error"));
@@ -215,8 +205,6 @@ class PortfolioReadPlatformServiceImplTest {
         when(portfolioRepository.findByUserId(userId)).thenReturn(Arrays.asList(portfolio));
         when(stockRepository.findBySymbolIn(anyList())).thenReturn(Arrays.asList());
         when(sectorRepository.findAllById(anySet())).thenReturn(Arrays.asList());
-        when(portfolioAnalyzerEngine.analyze(anyList(), anyMap(), anyMap())).thenReturn(Arrays.asList());
-        when(portfolioAnalyzerEngine.calculateHealthScore(anyList())).thenReturn(0);
         when(savingsAccountService.getAllSavingsAccounts(userId)).thenReturn(Arrays.asList());
         when(fixedDepositService.getAllFixedDeposits(userId)).thenReturn(Arrays.asList());
         when(recurringDepositService.getAllRecurringDeposits(userId)).thenReturn(Arrays.asList());

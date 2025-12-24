@@ -40,17 +40,20 @@ public class PortfolioRiskEvaluationService {
                 // Concentration Checks
                 if (pct > 40.0) {
                     insights.add(createInsight(AnalysisInsight.InsightType.CRITICAL,
-                            AnalysisInsight.InsightCategory.RISK,
+                            AnalysisInsight.InsightCategory.STOCK_CONCENTRATION,
+                            1, // Priority 1: Fix immediately
                             String.format("Critical exposure to single stock: %s (%.1f%%)", p.getStockSymbol(), pct),
                             "Reduce position size immediately to below 10%."));
                 } else if (pct > 25.0) {
                     insights.add(createInsight(AnalysisInsight.InsightType.CRITICAL,
-                            AnalysisInsight.InsightCategory.RISK,
+                            AnalysisInsight.InsightCategory.STOCK_CONCENTRATION,
+                            2, // Priority 2: Important
                             String.format("High exposure to single stock: %s (%.1f%%)", p.getStockSymbol(), pct),
                             "Consider trimming position to reduce risk."));
                 } else if (pct > 10.0) {
                     insights.add(createInsight(AnalysisInsight.InsightType.WARNING,
-                            AnalysisInsight.InsightCategory.RISK,
+                            AnalysisInsight.InsightCategory.STOCK_CONCENTRATION,
+                            3, // Priority 3: Monitor
                             String.format("Concentrated position in %s (%.1f%%)", p.getStockSymbol(), pct),
                             "Keep single stock exposure below 10% for better diversification."));
                 }
@@ -64,7 +67,8 @@ public class PortfolioRiskEvaluationService {
                     if (drawdown < -25.0) {
                         hasDrawdown = true;
                         insights.add(createInsight(AnalysisInsight.InsightType.CRITICAL,
-                                AnalysisInsight.InsightCategory.STOCK_PERFORMANCE,
+                                AnalysisInsight.InsightCategory.PERFORMANCE_DRAWDOWN,
+                                1, // Priority 1: Stock crash is urgent
                                 String.format("Stock crash alert: %s is down %.1f%%", p.getStockSymbol(), drawdown),
                                 "Review fundamentals. Consider stop-loss or holding if long-term thesis is intact."));
                     }
@@ -82,12 +86,14 @@ public class PortfolioRiskEvaluationService {
 
             if (pct > 40.0) {
                 insights.add(createInsight(AnalysisInsight.InsightType.CRITICAL,
-                        AnalysisInsight.InsightCategory.SECTOR_ALLOCATION,
+                        AnalysisInsight.InsightCategory.SECTOR_CONCENTRATION,
+                        2, // Priority 2
                         String.format("Critical sector over-allocation: %s (%.1f%%)", entry.getKey(), pct),
                         "Diversify into other sectors to reduce systemic risk."));
             } else if (pct > 30.0) {
                 insights.add(createInsight(AnalysisInsight.InsightType.WARNING,
-                        AnalysisInsight.InsightCategory.SECTOR_ALLOCATION,
+                        AnalysisInsight.InsightCategory.SECTOR_CONCENTRATION,
+                        3, // Priority 3
                         String.format("High sector exposure: %s (%.1f%%)", entry.getKey(), pct),
                         "Limit sector exposure to 30% maximum."));
             }
@@ -97,12 +103,14 @@ public class PortfolioRiskEvaluationService {
         double smallCapPct = smallCapAllocationPct.doubleValue();
         if (smallCapPct > 70.0) {
             insights.add(createInsight(AnalysisInsight.InsightType.CRITICAL,
-                    AnalysisInsight.InsightCategory.DIVERSIFICATION,
+                    AnalysisInsight.InsightCategory.MARKET_CAP_RISK,
+                    2, // Priority 2
                     String.format("High Small-Cap Exposure (%.1f%%)", smallCapPct),
                     "Rebalance portfolio with Large/Mid-cap stocks for stability."));
         } else if (smallCapPct > 50.0) { // Optional warning
             insights.add(createInsight(AnalysisInsight.InsightType.WARNING,
-                    AnalysisInsight.InsightCategory.DIVERSIFICATION,
+                    AnalysisInsight.InsightCategory.MARKET_CAP_RISK,
+                    3, // Priority 3
                     String.format("Significant Small-Cap Exposure (%.1f%%)", smallCapPct),
                     "Monitor volatility."));
         }
@@ -117,10 +125,12 @@ public class PortfolioRiskEvaluationService {
     }
 
     private AnalysisInsight createInsight(AnalysisInsight.InsightType type, AnalysisInsight.InsightCategory category,
+            Integer priority,
             String message, String action) {
         return AnalysisInsight.builder()
                 .type(type)
                 .category(category)
+                .priority(priority)
                 .message(message)
                 .recommendedAction(action)
                 .build();

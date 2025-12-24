@@ -1,6 +1,7 @@
 package com.investments.stocks.diversification.portfolio.service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.investments.stocks.diversification.portfolio.data.AnalysisInsight;
+import com.investments.stocks.diversification.portfolio.data.NextBestAction;
 import com.investments.stocks.diversification.portfolio.data.PortfolioInsightsDTO;
 import com.investments.stocks.diversification.portfolio.data.RiskSummary;
 
@@ -15,7 +17,13 @@ import com.investments.stocks.diversification.portfolio.data.RiskSummary;
 public class PortfolioInsightService {
 
     public PortfolioInsightsDTO groupInsights(List<AnalysisInsight> insights) {
-        Map<AnalysisInsight.InsightType, List<AnalysisInsight>> grouped = insights.stream()
+        // Sort insights by priority (if present) then by type
+        List<AnalysisInsight> sortedInsights = insights.stream()
+                .sorted(Comparator.comparing(AnalysisInsight::getPriority,
+                        Comparator.nullsLast(Comparator.naturalOrder())))
+                .collect(Collectors.toList());
+
+        Map<AnalysisInsight.InsightType, List<AnalysisInsight>> grouped = sortedInsights.stream()
                 .collect(Collectors.groupingBy(AnalysisInsight::getType));
 
         return PortfolioInsightsDTO.builder()
@@ -39,7 +47,7 @@ public class PortfolioInsightService {
                     warning++;
                     break;
                 case INFO:
-                case OPPORTUNITY: // Treating Opportunity as Info? Or ignore? Prompt says "info".
+                case OPPORTUNITY:
                     info++;
                     break;
                 default:
@@ -52,5 +60,62 @@ public class PortfolioInsightService {
                 .warningCount(warning)
                 .infoCount(info)
                 .build();
+    }
+
+    public List<String> generateTopRecommendations(List<AnalysisInsight> insights) {
+        return insights.stream()
+                .filter(i -> i.getType() == AnalysisInsight.InsightType.CRITICAL)
+                .sorted(Comparator.comparing(AnalysisInsight::getPriority,
+                        Comparator.nullsLast(Comparator.naturalOrder())))
+                .map(AnalysisInsight::getRecommendedAction)
+                .filter(action -> action != null && !action.isEmpty())
+                .distinct()
+                .limit(3)
+                .collect(Collectors.toList());
+    }
+
+    public NextBestAction deriveNextBestAction(List<AnalysisInsight> insights) {
+        return insights.stream()
+                .filter(i -> i.getType() == AnalysisInsight.InsightType.CRITICAL)
+                .sorted(Comparator.comparing(AnalysisInsight::getPriority,
+                        Comparator.nullsLast(Comparator.naturalOrder())))
+                .findFirst()
+                .map(i -> NextBestAction.builder()
+                        .title(mapCategoryToTitle(i.getCategory()))
+                        .description(i.getMessage())
+                        .urgency(mapPriorityToUrgency(i.getPriority()))
+                        .build())
+                .orElse(null);
+    }
+
+    private String mapCategoryToTitle(AnalysisInsight.InsightCategory category) {
+        if (category == null)
+            return "Action Required";
+        switch (category) {
+            case STOCK_CONCENTRATION:
+                return "Reduce Single Stock Exposure";
+            case SECTOR_CONCENTRATION:
+                return "Diversify Sector Allocation";
+            case MARKET_CAP_RISK:
+                return "Balance Market Cap";
+            case PERFORMANCE_DRAWDOWN:
+                return "Review Underperforming Assets";
+            case LIQUIDITY_RISK:
+                return "Improve Liquidity";
+            case INSURANCE_RISK:
+                return "Review Insurance Coverage";
+            default:
+                return "Portfolio Action";
+        }
+    }
+
+    private String mapPriorityToUrgency(Integer priority) {
+        if (priority == null)
+            return "MEDIUM";
+        if (priority == 1)
+            return "HIGH";
+        if (priority == 2)
+            return "MEDIUM";
+        return "LOW";
     }
 }

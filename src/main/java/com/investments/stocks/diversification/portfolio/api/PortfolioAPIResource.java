@@ -37,12 +37,12 @@ public class PortfolioAPIResource {
         return this.portfolioWritePlatformService.addPortfolio(portfolio);
     }
 
-    @GetMapping("/diversification-score/{userId}")
-    @Operation(summary = "Get diversification score", description = "Calculates and returns the portfolio diversification score.")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved diversification score")
-    public PortfolioDTOResponse getDiversificationScore(@PathVariable Long userId) {
-        return this.portfolioReadPlatformService.getDiversificationScore(userId);
-    }
+    // @GetMapping("/diversification-score/{userId}")
+    // @Operation(summary = "Get diversification score", description = "Calculates and returns the portfolio diversification score.")
+    // @ApiResponse(responseCode = "200", description = "Successfully retrieved diversification score")
+    // public PortfolioDTOResponse getDiversificationScore(@PathVariable Long userId) {
+    //     return this.portfolioReadPlatformService.getPortfolioSummary(userId);
+    // }
 
     @GetMapping("/summary/{userId}")
     @Operation(summary = "Get portfolio summary", description = "Returns a comprehensive summary including investment, value, and analysis.")

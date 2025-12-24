@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.investments.stocks.data.Stock;
-import com.investments.stocks.diversification.portfolio.data.AnalysisInsight;
 import com.investments.stocks.diversification.portfolio.data.DataFreshness;
 import com.investments.stocks.diversification.portfolio.data.Portfolio;
 import com.investments.stocks.diversification.portfolio.data.PortfolioAllocationResult;
@@ -28,14 +27,6 @@ import com.investments.stocks.diversification.portfolio.repo.PortfolioRepository
 import com.investments.stocks.diversification.sectors.data.Sector;
 import com.investments.stocks.diversification.sectors.repo.SectorRepository;
 import com.investments.stocks.repo.StockRepository;
-import com.savings.service.SavingsAccountService;
-import com.savings.service.FixedDepositService;
-import com.savings.service.RecurringDepositService;
-import com.savings.data.SavingsAccountDTO;
-import com.savings.data.FixedDepositDTO;
-import com.savings.data.RecurringDepositDTO;
-import com.loan.service.LoanService;
-import com.protection.insurance.service.InsuranceService;
 
 @Service
 public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformService {
@@ -49,6 +40,7 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
     private final PortfolioRiskEvaluationService riskEvaluationService;
     private final PortfolioScoringService scoringService;
     private final PortfolioInsightService insightService;
+    private final PortfolioUtilityHelper portfolioUtilityHelper;
 
     public PortfolioReadPlatformServiceImpl(
             PortfolioRepository portfolioRepository,
@@ -58,7 +50,8 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
             PortfolioAllocationService allocationService,
             PortfolioRiskEvaluationService riskEvaluationService,
             PortfolioScoringService scoringService,
-            PortfolioInsightService insightService) {
+            PortfolioInsightService insightService,
+            PortfolioUtilityHelper portfolioUtilityHelper) {
         this.portfolioRepository = portfolioRepository;
         this.stockRepository = stockRepository;
         this.sectorRepository = sectorRepository;
@@ -67,20 +60,11 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
         this.riskEvaluationService = riskEvaluationService;
         this.scoringService = scoringService;
         this.insightService = insightService;
+        this.portfolioUtilityHelper = portfolioUtilityHelper;
     }
 
-    @Override
     public PortfolioDTOResponse getPortfolioSummary(Long userId) {
-        return getDiversificationScore(userId);
-    }
-
-    @Override
-    public PortfolioDTOResponse getDiversificationScore(Long userId) {
         List<Portfolio> userPortfolios = portfolioRepository.findByUserId(userId);
-        return generatePortfolioResponse(userPortfolios);
-    }
-
-    private PortfolioDTOResponse generatePortfolioResponse(List<Portfolio> userPortfolios) {
         if (userPortfolios.isEmpty()) {
             return PortfolioDTOResponse.builder()
                     .score(0)
@@ -145,73 +129,17 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
                 .isStale(false)
                 .build();
 
-        // Collect recommendations from insights for backward compatibility or display
-        List<String> recommendations = riskResult.getInsights().stream()
-                .map(AnalysisInsight::getRecommendedAction)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        // 8. Recommendations & Actions
+        List<String> recommendations = insightService.generateTopRecommendations(riskResult.getInsights());
 
-        if (recommendations.isEmpty()) {
+        if (recommendations.isEmpty() && scoring.getScore() > 80) {
             recommendations.add("Your portfolio is looking good!");
         }
 
         // Extended aggregates
-        BigDecimal savingsTotal = BigDecimal.ZERO;
-        Long uid = userPortfolios.isEmpty() ? null : userPortfolios.get(0).getUserId();
-        
-        // Cash savings
-        try {
-            List<SavingsAccountDTO> savings = savingsAccountService.getAllSavingsAccounts(uid);
-            if (savings != null) {
-                savingsTotal = savings.stream()
-                    .map(SavingsAccountDTO::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            }
-        } catch (Exception ignored) {}
-        
-        // Fixed Deposits
-        try {
-            if (uid != null) {
-                List<FixedDepositDTO> fds = fixedDepositService.getAllFixedDeposits(uid);
-                if (fds != null) {
-                    BigDecimal fdValue = fds.stream()
-                        .map(fd -> fd.getMaturityAmount() != null ? fd.getMaturityAmount() : fd.getPrincipalAmount())
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    savingsTotal = savingsTotal.add(fdValue);
-                }
-            }
-        } catch (Exception ignored) {}
-        
-        // Recurring Deposits
-        try {
-            if (uid != null) {
-                List<RecurringDepositDTO> rds = recurringDepositService.getAllRecurringDeposits(uid);
-                if (rds != null) {
-                    BigDecimal rdValue = rds.stream()
-                        .map(rd -> rd.getMaturityAmount() != null ? rd.getMaturityAmount() : BigDecimal.ZERO)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    savingsTotal = savingsTotal.add(rdValue);
-                }
-            }
-        } catch (Exception ignored) {}
-
-        BigDecimal loansOutstanding = BigDecimal.ZERO;
-        try {
-            if (uid != null) {
-                loansOutstanding = loanService.getLoansByUserId(uid).stream()
-                    .map(l -> l.getOutstandingAmount() != null ? l.getOutstandingAmount() : BigDecimal.ZERO)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            }
-        } catch (Exception ignored) {}
-
-        BigDecimal insuranceCoverTotal = BigDecimal.ZERO;
-        try {
-            if (uid != null) {
-                insuranceCoverTotal = insuranceService.getInsurancePoliciesByUserId(uid).stream()
-                    .map(i -> i.getCoverAmount() != null ? i.getCoverAmount() : BigDecimal.ZERO)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            }
-        } catch (Exception ignored) {}
+        BigDecimal savingsTotal = this.portfolioUtilityHelper.calculateSavingsValue(userId);
+        BigDecimal loansOutstanding = this.portfolioUtilityHelper.calculateLoanOutstanding(userId);
+        BigDecimal insuranceCoverTotal = this.portfolioUtilityHelper.calculateInsuranceTotalCover(userId);
 
         return PortfolioDTOResponse.builder()
                 .totalInvestment(valuation.getTotalInvestment())
@@ -222,10 +150,15 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
                 .marketCapAllocation(allocation.getMarketCapAllocation())
                 .score(scoring.getScore())
                 .assessment(scoring.getAssessment())
+                .scoreExplanation(scoring.getScoreExplanation())
                 .recommendations(recommendations)
+                .nextBestAction(insightService.deriveNextBestAction(riskResult.getInsights()))
                 .insights(insights)
                 .riskSummary(riskSummary)
                 .dataFreshness(freshness)
+                .loansOutstanding(loansOutstanding)
+                .insuranceCoverTotal(insuranceCoverTotal)
+                .savingsTotal(savingsTotal)
                 .build();
     }
 }

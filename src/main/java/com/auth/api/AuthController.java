@@ -169,11 +169,10 @@ public class AuthController {
     public ResponseEntity<?> updateUser(@RequestHeader(value = "Authorization", required = false) String authHeader,
             @RequestBody Users user) {
         try {
-            String email = null;
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
                 try {
-                    email = jwtUtil.extractUsername(token);
+                   jwtUtil.extractUsername(token);
                 } catch (Exception e) {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                             .body(LoginResponse.builder().message("Invalid token").build());

@@ -2,10 +2,8 @@ package com.investments.stocks.diversification.portfolio.service;
 
 import org.springframework.stereotype.Service;
 
-import com.investments.stocks.data.Stock;
 import com.investments.stocks.diversification.portfolio.data.Portfolio;
 import com.investments.stocks.diversification.portfolio.repo.PortfolioRepository;
-import com.investments.stocks.diversification.sectors.repo.SectorRepository;
 import com.investments.stocks.exception.SymbolNotFoundException;
 import com.investments.stocks.repo.StockRepository;
 

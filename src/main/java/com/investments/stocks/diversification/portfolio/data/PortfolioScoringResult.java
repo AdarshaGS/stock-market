@@ -8,4 +8,5 @@ import lombok.Data;
 public class PortfolioScoringResult {
     private int score;
     private String assessment;
+    private ScoreExplanation scoreExplanation;
 }

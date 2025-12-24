@@ -28,12 +28,14 @@ public class PortfolioDTOResponse {
   // private int healthScore; // Removed internally
   private PortfolioInsightsDTO insights; // Grouped insights
   private RiskSummary riskSummary;
+  private NextBestAction nextBestAction;
+  private ScoreExplanation scoreExplanation;
   private MarketCapAllocation marketCapAllocation;
   private DataFreshness dataFreshness;
 
   // Extended summary fields
-  private BigDecimal savingsTotal;        // Sum of savings accounts
-  private BigDecimal loansOutstanding;    // Sum of loan outstanding amounts
+  private BigDecimal savingsTotal; // Sum of savings accounts
+  private BigDecimal loansOutstanding; // Sum of loan outstanding amounts
   private BigDecimal insuranceCoverTotal; // Sum of insurance cover amounts
 
   public PortfolioDTOResponse() {
