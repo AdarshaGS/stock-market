@@ -1,66 +1,142 @@
-# 💰 MoneyPulse — Stock & Personal Finance Intelligence System
+# PI-System (Portfolio Intelligence System)
 
-MoneyPulse is a Spring Boot–based financial intelligence platform designed to help users track their investments, analyze diversification, compute net worth, and make data-driven financial decisions.  
+PI-System is a **personal finance intelligence platform** designed to help individuals understand, track, and improve their financial health across **investments, savings, loans, insurance, and net worth**.
 
-It integrates with external stock market APIs, performs sector-based diversification scoring, and is structured to support future modules like budgeting, account aggregators, alerts, and AI-driven insights.
-
----
-
-## 🌟 Key Capabilities
-
-✔ Stock price retrieval from external APIs  
-✔ Portfolio tracking & profit/loss analysis  
-✔ Sector-based diversification scoring  
-✔ Token-based authentication using JWT  
-✔ User password encryption using BCrypt  
-✔ Caching logic for unavailable external providers  
-✔ Expandable architecture for future finance modules  
+The goal of PI-System is **not just tracking**, but **decision-making** — turning raw financial data into **clear, actionable insights**.
 
 ---
 
-## 🧭 Product Workflow Diagram
+## 🚀 Vision
 
-> The full system workflow diagram is available here:  
-🔗 **https://www.mermaidchart.com/app/projects/ef11d05b-42d4-47ba-a46f-4b0a68ac58f3/diagrams/bf2087c9-56e3-4bd7-b604-812953cd9be5/version/v0.1/edit**
+Most finance apps show numbers.
 
-### Simplified System Flow (Mermaid)
+**PI-System explains what those numbers mean and what to do next.**
 
-```mermaid
-flowchart TD
+It acts as a **personal financial assistant** that:
+- Aggregates financial data
+- Analyzes risk and diversification
+- Highlights problems early
+- Suggests corrective actions
+- Evolves with the user over time
 
-User[[User]] -->|Register/Login| Auth[JWT Auth Service]
-Auth -->|Valid Credentials| JWT[Generate JWT Token]
-JWT -->|Bearer Token| API[Protected API Layer]
+---
 
-API -->|Portfolio Requests| PortfolioService
-API -->|Stock Lookup| StockService
-API -->|Net Worth Requests| NetWorthService
-API -->|User Asset Insert| AssetService
-API -->|Future: Alerts & Analytics| InsightsService
+## 🧩 Core Principles
 
-StockService -->|Check DB| StockDB[(Stocks DB)]
-StockDB -->|Found| ReturnStock
-StockDB -->|Not Found| ThirdPartyCheck{External Stock API?}
+- **Explainability over hype** – every score and insight is transparent  
+- **Rule-based first** – deterministic, testable logic before AI  
+- **User trust first** – no misleading “all good” signals  
+- **Action-oriented** – every insight points to a decision  
+- **Modular architecture** – easy to extend, isolate, and scale  
 
-ThirdPartyCheck -->|Yes| ExternalAPI[External Market API]
-ExternalAPI --> Parse[Parse & Store]
-Parse --> ReturnStock
+---
 
-ThirdPartyCheck -->|No| Cached[Use Last Known Price]
+## 🏗️ Current Architecture
 
-PortfolioService --> PortfolioDB[(Portfolio Holdings DB)]
-PortfolioDB --> Calculate[Calculate Current Value]
+PI-System is designed as a **modular backend system**, with scope to expand into microservices.
 
-Calculate --> Diversify[Sector Mapping & Score]
+### Core Services
+- **PI-System Core** – Financial engine & APIs
+- **Automation Test Suite** – API automation & regression testing
+- **LLM PI-System (Planned)** – Future intelligence layer
 
-Diversify --> SectorDB[(Sectors DB)]
-SectorDB --> Diversify
+---
 
-Diversify --> Insight[Generate Recommendations]
-Insight --> ReturnSummary
+## 📦 Implemented Modules (Current Status)
 
-NetWorthService --> UserAssets[(Assets DB)]
-NetWorthService --> UserLiabilities[(Liabilities DB)]
-UserAssets --> ComputeNW[Compute Net Worth]
-UserLiabilities --> ComputeNW
-ComputeNW --> ReturnNW[Return Net Worth Summary]
+### ✅ User & Authentication
+- User registration & login
+- Password hashing (BCrypt)
+- JWT-based authentication
+- Refresh token & logout (blacklisting)
+- Forgot password flow
+
+---
+
+### ✅ Portfolio Module (MVP Complete)
+- Stock holdings management
+- Portfolio valuation
+- Sector allocation analysis
+- Market-cap distribution
+- Diversification scoring
+- Explainable scoring model
+- Priority-based risk insights
+- Next Best Action generation
+- Data freshness tracking
+
+---
+
+### ✅ Net Worth Engine
+- Aggregates:
+  - Investments
+  - Savings
+  - Loans
+  - Insurance cover
+- Computes:
+  - Total assets
+  - Total liabilities
+  - Net worth
+- Integrated with portfolio intelligence
+
+---
+
+### ✅ External Services Layer
+- Centralized third-party API configuration
+- Dynamic credentials support
+- Request/response auditing
+- Failure-tolerant design
+- Fallback handling
+
+---
+
+### ✅ Savings Accounts (Manual + Foundation)
+- Savings balance tracking
+- FD / RD basic support
+- Ready for Account Aggregator ingestion
+
+---
+
+### ✅ Loans (In Progress)
+- Outstanding loan tracking
+- Integrated into net worth
+- Risk context planned (liquidity vs debt)
+
+---
+
+### ✅ Lending Money Tracker
+- Track money lent to friends/family
+- Due date reminders (in-app)
+- Outstanding balance calculation
+- Integrated into net worth
+
+---
+
+### ✅ Observability
+- Health status endpoint
+- Request audit logs
+- Third-party request/response logs
+
+---
+
+## 🧠 Portfolio Intelligence Engine (Key Feature)
+
+The Portfolio Engine produces **decision-quality insights**, not just metrics.
+
+### Example Capabilities
+- Detects single-stock over-concentration
+- Flags sector imbalance
+- Highlights small-cap risk
+- Identifies sharp drawdowns
+- Generates prioritized risk insights
+- Produces a single **Next Best Action**
+
+### Example Output (Simplified)
+```json
+{
+  "score": 30,
+  "assessment": "POORLY_DIVERSIFIED",
+  "nextBestAction": {
+    "title": "Reduce risk from over-concentrated stocks",
+    "urgency": "HIGH"
+  }
+}
