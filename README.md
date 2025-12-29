@@ -1,6 +1,6 @@
-# 💰 MoneyPulse — Stock & Personal Finance Intelligence System
+# 💰 PI SYSTEM — Stock & Personal Finance Intelligence System
 
-MoneyPulse is a Spring Boot–based financial intelligence platform designed to help users track their investments, analyze diversification, compute net worth, and make data-driven financial decisions.  
+PI SYSTEM is a Spring Boot–based financial intelligence platform designed to help users track their investments, analyze diversification, compute net worth, and make data-driven financial decisions.  
 
 It integrates with external stock market APIs, performs sector-based diversification scoring, and is structured to support future modules like budgeting, account aggregators, alerts, and AI-driven insights.
 
