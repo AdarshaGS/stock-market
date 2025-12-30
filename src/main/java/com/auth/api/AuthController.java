@@ -99,7 +99,6 @@ public class AuthController {
                         .body(LoginResponse.builder().message("User with this email already exists").build());
             }
 
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
             Users savedUser = userWriteService.createUser(user);
 
             // Generate tokens for the new user
@@ -194,6 +193,9 @@ public class AuthController {
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(LoginResponse.builder().message("Authorization header missing").build());
+            }
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
             }
             userWriteService.updateUser(user);
             return ResponseEntity.ok(LoginResponse.builder().message("User updated successfully").build());

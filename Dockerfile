@@ -19,7 +19,8 @@ COPY scripts ./scripts
 RUN gradle bootJar --no-daemon -x test
 
 # Stage 2: Create the runtime image
-FROM eclipse-temurin:17-jre-alpine
+# Stage 2: Create the runtime image
+FROM bellsoft/liberica-openjdk-alpine:17
 
 WORKDIR /app
 

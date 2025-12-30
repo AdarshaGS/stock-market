@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   mysql:
@@ -8,10 +8,8 @@ services:
     environment:
       MYSQL_DATABASE: pi-system
       MYSQL_ROOT_PASSWORD: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: T"\U;yn@h3285mB3
     ports:
-      - "3306:3306"
+      - "3201:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -22,6 +20,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - stock-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build:
@@ -34,8 +45,10 @@ services:
     environment:
       # DB configuration matching your `application.properties`
       DB_URL: jdbc:mysql://mysql:3306/pi-system?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      DB_USER: mysql
-      DB_PASSWORD: T"\U;yn@h3285mB3
+      DB_USER: root
+      DB_PASSWORD: mysql
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
 
       # JWT config
       JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
@@ -45,6 +58,8 @@ services:
 
     depends_on:
       mysql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - stock-network
