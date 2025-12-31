@@ -1,5 +1,7 @@
 package com.mcp.service;
 
+import com.budget.data.BudgetReportDTO;
+import com.budget.service.BudgetService;
 import com.investments.stocks.diversification.portfolio.data.AnalysisInsight;
 import com.investments.stocks.diversification.portfolio.data.PortfolioDTOResponse;
 import com.investments.stocks.diversification.portfolio.service.PortfolioReadPlatformService;
@@ -24,6 +26,7 @@ public class McpToolService {
 
     private final PortfolioReadPlatformService portfolioReadPlatformService;
     private final NetWorthReadPlatformService netWorthReadPlatformService;
+    private final BudgetService budgetService;
 
     public McpPortfolioSummary getPortfolioSummary(Long userId) {
         PortfolioDTOResponse response = portfolioReadPlatformService.getPortfolioSummary(userId);
@@ -85,5 +88,9 @@ public class McpToolService {
                 .criticalRiskCount(criticalCount)
                 .topCriticalInsights(topInsights)
                 .build();
+    }
+
+    public BudgetReportDTO getBudgetSummary(Long userId, String monthYear) {
+        return budgetService.getMonthlyReport(userId, monthYear);
     }
 }
