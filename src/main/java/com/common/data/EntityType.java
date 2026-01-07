@@ -37,9 +37,13 @@ public enum EntityType {
         this.name = name;
     }
 
-    @JsonValue
     public int getId() {
         return id;
+    }
+
+    @JsonValue
+    public String getValue() {
+        return name();
     }
 
     public String getName() {
@@ -47,6 +51,28 @@ public enum EntityType {
     }
 
     @JsonCreator
+    public static EntityType fromValue(Object value) {
+        if (value == null) {
+            return OTHER;
+        }
+        if (value instanceof Integer) {
+            return fromId((Integer) value);
+        }
+        if (value instanceof String) {
+            String strValue = (String) value;
+            try {
+                return EntityType.valueOf(strValue);
+            } catch (IllegalArgumentException e) {
+                try {
+                    return fromId(Integer.parseInt(strValue));
+                } catch (NumberFormatException nfe) {
+                    return OTHER;
+                }
+            }
+        }
+        return OTHER;
+    }
+
     public static EntityType fromId(int id) {
         for (EntityType type : EntityType.values()) {
             if (type.id == id) {

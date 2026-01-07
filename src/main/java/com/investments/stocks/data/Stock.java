@@ -39,7 +39,7 @@ public class Stock implements TypedEntity {
     @Column(name = "price", nullable = true)
     private Double price;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "sector_id")

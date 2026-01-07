@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +31,7 @@ public class ExternalServicePropertiesEntity {
     @Column(name = "value", nullable = false)
     private String value;
 
-    @Column(name = "external_service_id", nullable = false)
-    private Long externalServiceId;
+    @ManyToOne
+    @JoinColumn(name = "external_service_id", nullable = false)
+    private ExternalServiceEntity externalService;
 }

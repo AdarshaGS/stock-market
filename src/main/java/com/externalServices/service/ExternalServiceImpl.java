@@ -9,14 +9,14 @@ import com.externalServices.data.ExternalServicePropertiesEntity;
 import com.externalServices.repo.ExternalServicePropertiesRepository;
 import com.externalServices.repo.ExternalServiceRepository;
 
-
 @Service
 public class ExternalServiceImpl implements ExternalService {
 
     private final ExternalServiceRepository externalServiceRepository;
     private final ExternalServicePropertiesRepository externalServicePropertiesRepository;
 
-    public ExternalServiceImpl(ExternalServiceRepository externalServiceRepository, ExternalServicePropertiesRepository externalServicePropertiesRepository) {
+    public ExternalServiceImpl(ExternalServiceRepository externalServiceRepository,
+            ExternalServicePropertiesRepository externalServicePropertiesRepository) {
         this.externalServiceRepository = externalServiceRepository;
         this.externalServicePropertiesRepository = externalServicePropertiesRepository;
     }
@@ -25,11 +25,11 @@ public class ExternalServiceImpl implements ExternalService {
     public List<ExternalServicePropertiesEntity> getExternalServicePropertiesByServiceName(String serviceName) {
         List<ExternalServicePropertiesEntity> externalServiceProperties = null;
         ExternalServiceEntity entity = externalServiceRepository.findByServiceName(serviceName);
-        if(entity != null){
-            externalServiceProperties = this.externalServicePropertiesRepository.findPropertiesByExternalServiceId(entity.getId());
+        if (entity != null) {
+            externalServiceProperties = this.externalServicePropertiesRepository
+                    .findByExternalServiceId(entity.getId());
         }
         return externalServiceProperties;
     }
 
-    
 }

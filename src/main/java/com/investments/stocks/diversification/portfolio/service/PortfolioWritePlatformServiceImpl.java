@@ -15,13 +15,13 @@ import com.common.data.EntityType;
 public class PortfolioWritePlatformServiceImpl implements PortfolioWritePlatformService {
 
     private final PortfolioRepository portfolioRepository;
-    private final StockRepository stockRepository;
+    // private final StockRepository stockRepository;
     private final StockReadPlatformService stockReadPlatformService;
 
     public PortfolioWritePlatformServiceImpl(PortfolioRepository portfolioRepository, StockRepository stockRepository,
             StockReadPlatformService stockReadPlatformService) {
         this.portfolioRepository = portfolioRepository;
-        this.stockRepository = stockRepository;
+        // this.stockRepository = stockRepository;
         this.stockReadPlatformService = stockReadPlatformService;
     }
 
