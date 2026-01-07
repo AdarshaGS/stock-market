@@ -37,4 +37,4 @@ jwt:
     expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:2592000000}
 
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8082}

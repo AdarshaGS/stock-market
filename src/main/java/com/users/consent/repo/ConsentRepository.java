@@ -7,8 +7,7 @@ import com.users.consent.data.Consent;
 
 public interface ConsentRepository extends JpaRepository<Consent, Long>, JpaSpecificationExecutor<Consent> {
 
-    // @Query(value = "SELECT * FROM user_consent uc WHERE uc.user_id =:userId",
-    // nativeQuery = true)
-    // Consent findOneByUserId(@Param("userId") Long userId);
+    java.util.Optional<Consent> findByUserId(Long userId);
 
+    java.util.Optional<Consent> findByUserIdAndAgreed(Long userId, boolean agreed);
 }

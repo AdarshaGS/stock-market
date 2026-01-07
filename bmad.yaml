@@ -1,0 +1,4 @@
+bmad:
+  track: standard
+  artifacts_path: planning
+  phase: execution
