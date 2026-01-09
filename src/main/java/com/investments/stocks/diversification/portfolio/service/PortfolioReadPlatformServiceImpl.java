@@ -40,7 +40,6 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
     private final PortfolioRiskEvaluationService riskEvaluationService;
     private final PortfolioScoringService scoringService;
     private final PortfolioInsightService insightService;
-    private final PortfolioUtilityHelper portfolioUtilityHelper;
 
     public PortfolioReadPlatformServiceImpl(
             PortfolioRepository portfolioRepository,
@@ -50,8 +49,7 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
             PortfolioAllocationService allocationService,
             PortfolioRiskEvaluationService riskEvaluationService,
             PortfolioScoringService scoringService,
-            PortfolioInsightService insightService,
-            PortfolioUtilityHelper portfolioUtilityHelper) {
+            PortfolioInsightService insightService) {
         this.portfolioRepository = portfolioRepository;
         this.stockRepository = stockRepository;
         this.sectorRepository = sectorRepository;
@@ -60,7 +58,6 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
         this.riskEvaluationService = riskEvaluationService;
         this.scoringService = scoringService;
         this.insightService = insightService;
-        this.portfolioUtilityHelper = portfolioUtilityHelper;
     }
 
     public PortfolioDTOResponse getPortfolioSummary(Long userId) {
@@ -136,10 +133,7 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
             recommendations.add("Your portfolio is looking good!");
         }
 
-        // Extended aggregates
-        BigDecimal savingsTotal = this.portfolioUtilityHelper.calculateSavingsValue(userId);
-        BigDecimal loansOutstanding = this.portfolioUtilityHelper.calculateLoanOutstanding(userId);
-        BigDecimal insuranceCoverTotal = this.portfolioUtilityHelper.calculateInsuranceTotalCover(userId);
+        // Extended aggregates removed as per requirements
 
         return PortfolioDTOResponse.builder()
                 .totalInvestment(valuation.getTotalInvestment())
@@ -156,9 +150,6 @@ public class PortfolioReadPlatformServiceImpl implements PortfolioReadPlatformSe
                 .insights(insights)
                 .riskSummary(riskSummary)
                 .dataFreshness(freshness)
-                .loansOutstanding(loansOutstanding)
-                .insuranceCoverTotal(insuranceCoverTotal)
-                .savingsTotal(savingsTotal)
                 .build();
     }
 }

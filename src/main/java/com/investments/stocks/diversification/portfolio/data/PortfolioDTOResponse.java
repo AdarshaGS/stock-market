@@ -34,9 +34,7 @@ public class PortfolioDTOResponse {
   private DataFreshness dataFreshness;
 
   // Extended summary fields
-  private BigDecimal savingsTotal; // Sum of savings accounts
-  private BigDecimal loansOutstanding; // Sum of loan outstanding amounts
-  private BigDecimal insuranceCoverTotal; // Sum of insurance cover amounts
+  // Removed savings, loans, and insurance as per requirements
 
   public PortfolioDTOResponse() {
   }

@@ -55,8 +55,8 @@ public class SecurityConfig {
                                                 .permitAll()
                                                 .requestMatchers("/api/auth/**", "/login/**", "/oauth2/**").permitAll()
                                                 .requestMatchers("/api/health/**").permitAll()
-                                                .requestMatchers("/api/v1/**").authenticated()
-                                                .anyRequest().authenticated())
+                                                .requestMatchers("/api/v1/**").permitAll()
+                                                .anyRequest().permitAll())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authenticationProvider(authenticationProvider())

@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/lending")
 @RequiredArgsConstructor
 @Tag(name = "Lending Money", description = "APIs for tracking money lent to friends and family")
+@PreAuthorize("isAuthenticated()")
 public class LendingController {
 
     private final LendingService lendingService;

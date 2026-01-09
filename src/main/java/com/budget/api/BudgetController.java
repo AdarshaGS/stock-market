@@ -6,12 +6,14 @@ import com.budget.data.Expense;
 import com.budget.service.BudgetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/budget")
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class BudgetController {
 
     private final BudgetService budgetService;

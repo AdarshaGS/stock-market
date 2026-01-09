@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.investments.stocks.networth.data.AssetLiabilityTemplateDTO;
 import com.investments.stocks.networth.data.NetWorthDTO;
 import com.investments.stocks.networth.service.NetWorthReadPlatformService;
 
@@ -17,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RestController
 @RequestMapping("/api/v1/net-worth")
 @Tag(name = "Net Worth Management", description = "APIs for calculating user net worth")
+@PreAuthorize("isAuthenticated()")
 public class NetWorthController {
 
     private final NetWorthReadPlatformService netWorthReadPlatformService;
@@ -31,5 +33,11 @@ public class NetWorthController {
     @PreAuthorize("@userSecurity.hasUserId(#userId)")
     public NetWorthDTO getNetWorth(@PathVariable Long userId) {
         return netWorthReadPlatformService.getNetWorth(userId);
+    }
+
+    @GetMapping("/template")
+    @Operation(summary = "Get asset and liability templates", description = "Returns possible types of assets and liabilities.")
+    public AssetLiabilityTemplateDTO getTemplates() {
+        return netWorthReadPlatformService.getEntityTemplates();
     }
 }

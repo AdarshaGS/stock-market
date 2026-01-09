@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.savings.data.SavingsAccount;
 import com.savings.data.SavingsAccountDTO;
@@ -26,6 +27,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("api/v1/savings-account")
 @Tag(name = "Savings Account Management", description = "APIs for managing user savings accounts, FD/RD, and bank balances")
 @AllArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class SavingsApiResource {
 
     @Autowired

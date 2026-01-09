@@ -55,7 +55,7 @@ public class PortfolioReadPlatformServiceImplTest {
                 PortfolioInsightService insightService = new PortfolioInsightService();
 
                 service = new PortfolioReadPlatformServiceImpl(portfolioRepository, stockRepository, sectorRepository,
-                                valuationService, allocationService, riskService, scoringService, insightService, null);
+                                valuationService, allocationService, riskService, scoringService, insightService);
         }
 
         @Test

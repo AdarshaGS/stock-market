@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.investments.stocks.data.StockResponse;
 import com.investments.stocks.service.StockReadPlatformService;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/api/v1/stocks")
 @Tag(name = "Stock Management", description = "APIs for fetching stock details")
+@PreAuthorize("isAuthenticated()")
 public class StockApiResource {
 
     private final StockReadPlatformService stockReadPlatformService;

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.savings.data.RecurringDeposit;
 import com.savings.data.RecurringDepositDTO;
@@ -25,6 +26,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("api/v1/recurring-deposit")
 @Tag(name = "Recurring Deposit Management", description = "APIs for managing Recurring Deposits with automatic maturity calculation")
 @AllArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class RecurringDepositApiResource {
 
     private final RecurringDepositService recurringDepositService;

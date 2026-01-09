@@ -12,10 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/v1/mcp")
 @RequiredArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class McpToolController {
 
     private static final Logger logger = LoggerFactory.getLogger(McpToolController.class);

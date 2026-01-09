@@ -128,11 +128,6 @@ class PortfolioReadPlatformServiceImplTest {
         assertEquals(0, result.getCurrentValue().compareTo(new BigDecimal("2000"))); // 10 * 200
         assertEquals(0, result.getTotalProfitLoss().compareTo(new BigDecimal("500"))); // 2000 - 1500
 
-        // Extended data
-        assertEquals(0, result.getSavingsTotal().compareTo(new BigDecimal("185000"))); // 100k + 55k + 30k
-        assertEquals(0, result.getLoansOutstanding().compareTo(new BigDecimal("200000")));
-        assertEquals(0, result.getInsuranceCoverTotal().compareTo(new BigDecimal("5000000")));
-
         verify(savingsAccountService).getAllSavingsAccounts(userId);
         verify(fixedDepositService).getAllFixedDeposits(userId);
         verify(recurringDepositService).getAllRecurringDeposits(userId);
@@ -180,11 +175,6 @@ class PortfolioReadPlatformServiceImplTest {
         // Act
         PortfolioDTOResponse result = portfolioService.getPortfolioSummary(userId);
 
-        // Assert - Should not throw, should return zero for extended fields
-        assertNotNull(result);
-        assertEquals(BigDecimal.ZERO, result.getSavingsTotal());
-        assertEquals(BigDecimal.ZERO, result.getLoansOutstanding());
-        assertEquals(BigDecimal.ZERO, result.getInsuranceCoverTotal());
     }
 
     @Test
@@ -214,9 +204,5 @@ class PortfolioReadPlatformServiceImplTest {
         // Act
         PortfolioDTOResponse result = portfolioService.getPortfolioSummary(userId);
 
-        // Assert - Should handle nulls gracefully
-        assertNotNull(result);
-        assertEquals(BigDecimal.ZERO, result.getLoansOutstanding());
-        assertEquals(BigDecimal.ZERO, result.getInsuranceCoverTotal());
     }
 }

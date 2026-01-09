@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.investments.mutualfunds.data.MutualFundHolding;
 import com.investments.mutualfunds.data.MutualFundInsights;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/portfolio/mutual-funds")
 @RequiredArgsConstructor
 @Tag(name = "Mutual Fund Portfolio", description = "Read-only APIs for Mutual Fund Portfolio Analytics")
+@PreAuthorize("isAuthenticated()")
 public class MutualFundController {
 
     private final MutualFundService mutualFundService;

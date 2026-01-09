@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.savings.data.FixedDeposit;
 import com.savings.data.FixedDepositDTO;
@@ -25,6 +26,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("api/v1/fixed-deposit")
 @Tag(name = "Fixed Deposit Management", description = "APIs for managing Fixed Deposits with automatic maturity calculation")
 @AllArgsConstructor
+@PreAuthorize("isAuthenticated()")
 public class FixedDepositApiResource {
 
     private final FixedDepositService fixedDepositService;

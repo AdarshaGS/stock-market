@@ -57,8 +57,8 @@ public class PortfolioScoringService {
         // Clamp Score
         if (score > 90)
             score = 90;
-        if (score < 30) // Clamp to 30 as per requirements
-            score = 30;
+        if (score < 20) // Clamp to 20 as per requirements
+            score = 20;
 
         // Build Explanation
         ScoreExplanation explanation = ScoreExplanation.builder()

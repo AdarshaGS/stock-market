@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/api/v1/portfolio")
 @Tag(name = "Portfolio Management", description = "APIs for managing and analyzing portfolios")
+@PreAuthorize("isAuthenticated()")
 public class PortfolioAPIResource {
 
     private final PortfolioWritePlatformService portfolioWritePlatformService;
