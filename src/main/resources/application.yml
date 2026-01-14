@@ -36,5 +36,8 @@ jwt:
   refresh-token:
     expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:2592000000}
 
+aa:
+  mode: ${AA_MODE:MOCK}
+
 server:
   port: ${PORT:8082}

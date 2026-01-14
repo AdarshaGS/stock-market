@@ -41,14 +41,14 @@ public class RecurringDepositApiResource {
     @GetMapping("/{id}")
     @Operation(summary = "Get Recurring Deposit", description = "Retrieves a specific Recurring Deposit by ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved Recurring Deposit")
-    public RecurringDepositDTO getRecurringDeposit(@PathVariable Long id, @RequestParam Long userId) {
+    public RecurringDepositDTO getRecurringDeposit(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
         return recurringDepositService.getRecurringDeposit(id, userId);
     }
 
     @GetMapping("/{userId}")
     @Operation(summary = "Get all Recurring Deposits for user", description = "Retrieves all Recurring Deposits for a specific user")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved Recurring Deposits")
-    public List<RecurringDepositDTO> getAllRecurringDeposits(@PathVariable Long userId) {
+    public List<RecurringDepositDTO> getAllRecurringDeposits(@PathVariable("userId") Long userId) {
         return recurringDepositService.getAllRecurringDeposits(userId);
     }
 
@@ -56,8 +56,8 @@ public class RecurringDepositApiResource {
     @Operation(summary = "Update Recurring Deposit", description = "Updates an existing Recurring Deposit and recalculates maturity")
     @ApiResponse(responseCode = "200", description = "Successfully updated Recurring Deposit")
     public RecurringDepositDTO updateRecurringDeposit(
-            @PathVariable Long id,
-            @RequestParam Long userId,
+            @PathVariable("id") Long id,
+            @RequestParam("userId") Long userId,
             @RequestBody RecurringDeposit recurringDeposit) {
         return recurringDepositService.updateRecurringDeposit(id, userId, recurringDeposit);
     }
@@ -65,7 +65,7 @@ public class RecurringDepositApiResource {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Recurring Deposit", description = "Deletes a Recurring Deposit")
     @ApiResponse(responseCode = "200", description = "Successfully deleted Recurring Deposit")
-    public void deleteRecurringDeposit(@PathVariable Long id, @RequestParam Long userId) {
+    public void deleteRecurringDeposit(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
         recurringDepositService.deleteRecurringDeposit(id, userId);
     }
 }

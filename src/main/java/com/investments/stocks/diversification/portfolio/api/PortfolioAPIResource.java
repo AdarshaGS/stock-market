@@ -44,7 +44,7 @@ public class PortfolioAPIResource {
     @Operation(summary = "Get portfolio summary", description = "Returns a comprehensive summary including investment, value, and analysis.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved portfolio summary")
     @PreAuthorize("@userSecurity.hasUserId(#userId)")
-    public PortfolioDTOResponse getPortfolioSummary(@PathVariable Long userId) {
+    public PortfolioDTOResponse getPortfolioSummary(@PathVariable("userId") Long userId) {
         return this.portfolioReadPlatformService.getPortfolioSummary(userId);
     }
 

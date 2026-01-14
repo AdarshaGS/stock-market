@@ -1,4 +1,4 @@
-package com.users.consent.data;
+package com.aa.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class ConsentRequest {
-    private Long userId;
-    private String consentTemplateId;
+@AllArgsConstructor
+public class ConsentStatusResponse {
+    private String consentId;
+    private ConsentStatus status;
 }

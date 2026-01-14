@@ -30,6 +30,12 @@ public class BudgetService {
     }
 
     public Budget setBudget(Budget budget) {
+        if (budget.getMonthYear() == null) {
+            budget.setMonthYear(YearMonth.now().toString());
+        }
+        if (budget.getCategory() == null) {
+            budget.setCategory(ExpenseCategory.TOTAL);
+        }
         return budgetRepository.findByUserIdAndCategoryAndMonthYear(
                 budget.getUserId(), budget.getCategory(), budget.getMonthYear())
                 .map(existing -> {
@@ -40,6 +46,9 @@ public class BudgetService {
     }
 
     public BudgetReportDTO getMonthlyReport(Long userId, String monthYear) {
+        if (monthYear == null) {
+            monthYear = YearMonth.now().toString();
+        }
         YearMonth ym = YearMonth.parse(monthYear);
         LocalDate start = ym.atDay(1);
         LocalDate end = ym.atEndOfMonth();
@@ -55,6 +64,9 @@ public class BudgetService {
         Map<ExpenseCategory, BudgetReportDTO.CategorySummary> breakdown = new HashMap<>();
 
         for (Budget b : budgets) {
+            if (b.getCategory() == ExpenseCategory.TOTAL) {
+                continue;
+            }
             BigDecimal spent = spentPerCategory.getOrDefault(b.getCategory(), BigDecimal.ZERO);
             BigDecimal limit = b.getMonthlyLimit();
             breakdown.put(b.getCategory(), BudgetReportDTO.CategorySummary.builder()
@@ -67,12 +79,12 @@ public class BudgetService {
 
         // Add categories that have spending but no budget
         spentPerCategory.forEach((cat, spent) -> {
-            if (!breakdown.containsKey(cat)) {
+            if (!breakdown.containsKey(cat) && cat != ExpenseCategory.TOTAL) {
                 breakdown.put(cat, BudgetReportDTO.CategorySummary.builder()
                         .limit(BigDecimal.ZERO)
                         .spent(spent)
                         .remaining(spent.negate())
-                        .percentageUsed(100.0) // Technically infinite if limit is 0
+                        .percentageUsed(100.0)
                         .build());
             }
         });
@@ -82,8 +94,13 @@ public class BudgetService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalBudget = budgets.stream()
+                .filter(b -> b.getCategory() == ExpenseCategory.TOTAL)
                 .map(Budget::getMonthlyLimit)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .findFirst()
+                .orElseGet(() -> budgets.stream()
+                        .filter(b -> b.getCategory() != ExpenseCategory.TOTAL)
+                        .map(Budget::getMonthlyLimit)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add));
 
         return BudgetReportDTO.builder()
                 .monthYear(monthYear)

@@ -40,25 +40,26 @@ public class LendingController {
     @GetMapping
     @Operation(summary = "List all lendings for a user")
     @PreAuthorize("@userSecurity.hasUserId(#userId)")
-    public ResponseEntity<List<LendingDTO>> getLendings(@RequestParam Long userId) {
+    public ResponseEntity<List<LendingDTO>> getLendings(@RequestParam("userId") Long userId) {
         return ResponseEntity.ok(lendingService.getUserLendings(userId));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get lending record details")
-    public ResponseEntity<LendingDTO> getLendingById(@PathVariable Long id) {
+    public ResponseEntity<LendingDTO> getLendingById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(lendingService.getLendingById(id));
     }
 
     @PostMapping("/{id}/repayment")
     @Operation(summary = "Add a repayment to a lending record")
-    public ResponseEntity<LendingDTO> addRepayment(@PathVariable Long id, @RequestBody RepaymentDTO repaymentDTO) {
+    public ResponseEntity<LendingDTO> addRepayment(@PathVariable("id") Long id,
+            @RequestBody RepaymentDTO repaymentDTO) {
         return ResponseEntity.ok(lendingService.addRepayment(id, repaymentDTO));
     }
 
     @PutMapping("/{id}/close")
     @Operation(summary = "Mark a lending record as fully paid")
-    public ResponseEntity<LendingDTO> closeLending(@PathVariable Long id) {
+    public ResponseEntity<LendingDTO> closeLending(@PathVariable("id") Long id) {
         return ResponseEntity.ok(lendingService.closeLending(id));
     }
 }

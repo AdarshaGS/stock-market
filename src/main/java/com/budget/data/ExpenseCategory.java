@@ -10,5 +10,6 @@ public enum ExpenseCategory {
     HEALTH,
     EDUCATION,
     INVESTMENT,
-    OTHERS
+    OTHERS,
+    TOTAL
 }

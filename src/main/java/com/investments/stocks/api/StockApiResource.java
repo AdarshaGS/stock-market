@@ -29,7 +29,7 @@ public class StockApiResource {
     @Operation(summary = "Get stock by symbol", description = "Fetches stock details including price and sector.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved stock details")
     @ApiResponse(responseCode = "404", description = "Stock symbol not found")
-    public StockResponse getStockBySymbol(@PathVariable String symbol) {
+    public StockResponse getStockBySymbol(@PathVariable("symbol") String symbol) {
         return this.stockReadPlatformService.getStockBySymbol(symbol);
     }
 }

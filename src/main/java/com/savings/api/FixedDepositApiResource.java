@@ -41,14 +41,14 @@ public class FixedDepositApiResource {
     @GetMapping("/{id}")
     @Operation(summary = "Get Fixed Deposit", description = "Retrieves a specific Fixed Deposit by ID")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved Fixed Deposit")
-    public FixedDepositDTO getFixedDeposit(@PathVariable Long id, @RequestParam Long userId) {
+    public FixedDepositDTO getFixedDeposit(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
         return fixedDepositService.getFixedDeposit(id, userId);
     }
 
     @GetMapping("/{userId}")
     @Operation(summary = "Get all Fixed Deposits for user", description = "Retrieves all Fixed Deposits for a specific user")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved Fixed Deposits")
-    public List<FixedDepositDTO> getAllFixedDeposits(@PathVariable Long userId) {
+    public List<FixedDepositDTO> getAllFixedDeposits(@PathVariable("userId") Long userId) {
         return fixedDepositService.getAllFixedDeposits(userId);
     }
 
@@ -56,8 +56,8 @@ public class FixedDepositApiResource {
     @Operation(summary = "Update Fixed Deposit", description = "Updates an existing Fixed Deposit and recalculates maturity")
     @ApiResponse(responseCode = "200", description = "Successfully updated Fixed Deposit")
     public FixedDepositDTO updateFixedDeposit(
-            @PathVariable Long id,
-            @RequestParam Long userId,
+            @PathVariable("id") Long id,
+            @RequestParam("userId") Long userId,
             @RequestBody FixedDeposit fixedDeposit) {
         return fixedDepositService.updateFixedDeposit(id, userId, fixedDeposit);
     }
@@ -65,7 +65,7 @@ public class FixedDepositApiResource {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Fixed Deposit", description = "Deletes a Fixed Deposit")
     @ApiResponse(responseCode = "200", description = "Successfully deleted Fixed Deposit")
-    public void deleteFixedDeposit(@PathVariable Long id, @RequestParam Long userId) {
+    public void deleteFixedDeposit(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
         fixedDepositService.deleteFixedDeposit(id, userId);
     }
 }

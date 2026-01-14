@@ -31,7 +31,7 @@ public class NetWorthController {
     @Operation(summary = "Get net worth", description = "Calculates total assets, liabilities, and net worth.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved net worth")
     @PreAuthorize("@userSecurity.hasUserId(#userId)")
-    public NetWorthDTO getNetWorth(@PathVariable Long userId) {
+    public NetWorthDTO getNetWorth(@PathVariable("userId") Long userId) {
         return netWorthReadPlatformService.getNetWorth(userId);
     }
 

@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import com.users.consent.data.ConsentRequest;
-import com.users.consent.data.ConsentTemplate;
-import com.users.consent.service.ConsentService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import com.users.consent.data.ConsentRequest;
+import com.users.consent.data.ConsentTemplate;
+import com.users.consent.service.ConsentService;
 
 @RestController
 @RequestMapping("api/v1/consent")

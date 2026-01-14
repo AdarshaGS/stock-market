@@ -1,39 +1,36 @@
 package com.users.consent.service;
 
 import java.util.List;
-
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-
-import com.users.consent.data.Consent;
-import com.users.consent.data.ConsentRequest;
+import com.aa.mock.MockConsentService;
 import com.users.consent.data.ConsentTemplate;
-import com.users.consent.repo.ConsentRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ConsentServiceImpl implements ConsentService {
 
-    private final ConsentRepository repository;
-    private final JdbcTemplate jdbcTemplate;
-
-    public ConsentServiceImpl(final ConsentRepository repository, final JdbcTemplate jdbcTemplate) {
-        this.repository = repository;
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    public Long createConsentForUser(ConsentRequest consentRequest) {
-        Consent consent = Consent.builder().userId(consentRequest.getUserId()).consentId(consentRequest.getConsentId())
-                .agreed(true).build();
-        this.repository.save(consent);
-        return consent.getId();
-    }
+    private final MockConsentService mockConsentService;
 
     @Override
     public List<ConsentTemplate> getConsentTemplates() {
-        final String sql = "select * from consent_template";
-        return this.jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ConsentTemplate.class));
+        return mockConsentService.getConsentTemplates().stream()
+                .map(m -> new ConsentTemplate(m.get("description")))
+                .collect(Collectors.toList());
     }
 
+    @Override
+    public Long createConsentForUser(com.users.consent.data.ConsentRequest request) {
+        // Adapt the request to the new Mock AA system
+        com.aa.data.ConsentRequest aaRequest = com.aa.data.ConsentRequest.builder()
+                .userId(String.valueOf(request.getUserId()))
+                .consentTemplateId(request.getConsentTemplateId())
+                .build();
+
+        mockConsentService.createConsent(aaRequest);
+        // The old API returned a Long (likely a DB ID), we'll return a dummy one or use
+        // the user ID
+        return request.getUserId();
+    }
 }

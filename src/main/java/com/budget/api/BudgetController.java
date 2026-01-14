@@ -19,22 +19,27 @@ public class BudgetController {
     private final BudgetService budgetService;
 
     @PostMapping("/expense")
+    @PreAuthorize("@userSecurity.hasUserId(#expense.userId)")
     public Expense addExpense(@RequestBody Expense expense) {
         return budgetService.addExpense(expense);
     }
 
     @GetMapping("/expense/{userId}")
-    public List<Expense> getExpenses(@PathVariable Long userId) {
+    @PreAuthorize("@userSecurity.hasUserId(#userId)")
+    public List<Expense> getExpenses(@PathVariable("userId") Long userId) {
         return budgetService.getRecentExpenses(userId);
     }
 
     @PostMapping("/limit")
+    @PreAuthorize("@userSecurity.hasUserId(#budget.userId)")
     public Budget setBudget(@RequestBody Budget budget) {
         return budgetService.setBudget(budget);
     }
 
     @GetMapping("/report/{userId}")
-    public BudgetReportDTO getReport(@PathVariable Long userId, @RequestParam String monthYear) {
+    @PreAuthorize("@userSecurity.hasUserId(#userId)")
+    public BudgetReportDTO getReport(@PathVariable("userId") Long userId,
+            @RequestParam(name = "monthYear", required = false) String monthYear) {
         return budgetService.getMonthlyReport(userId, monthYear);
     }
 }

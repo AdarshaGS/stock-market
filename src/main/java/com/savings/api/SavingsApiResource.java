@@ -50,7 +50,7 @@ public class SavingsApiResource {
     @GetMapping("/{userId}")
     @Operation(summary = "Get all Savings Accounts", description = "Retrieves all Savings Accounts for a specific user")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved all savings accounts")
-    public List<SavingsAccountDTO> getAllSavingsAccounts(@PathVariable Long userId) {
+    public List<SavingsAccountDTO> getAllSavingsAccounts(@PathVariable("userId") Long userId) {
         return this.savingsAccountService.getAllSavingsAccounts(userId);
     }
 
@@ -58,8 +58,8 @@ public class SavingsApiResource {
     @Operation(summary = "Update Savings Account", description = "Updates an existing Savings Account")
     @ApiResponse(responseCode = "200", description = "Successfully updated Savings Account")
     public SavingsAccountDTO updateSavingsAccount(
-            @PathVariable Long id,
-            @RequestParam Long userId,
+            @PathVariable("id") Long id,
+            @RequestParam("userId") Long userId,
             @RequestBody SavingsAccount savingsAccount) {
         return this.savingsAccountService.updateSavingsAccount(id, userId, savingsAccount);
     }
@@ -67,7 +67,7 @@ public class SavingsApiResource {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Savings Account", description = "Deletes a Savings Account")
     @ApiResponse(responseCode = "200", description = "Successfully deleted Savings Account")
-    public void deleteSavingsAccount(@PathVariable Long id, @RequestParam Long userId) {
+    public void deleteSavingsAccount(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
         this.savingsAccountService.deleteSavingsAccount(id, userId);
     }
 }
